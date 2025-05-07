@@ -1,12 +1,30 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
+// Define your navigation parameter list type
+type RootStackParamList = {
+  Home: undefined;
+  SignIn: undefined;
+};
+
+// Create a typed navigation prop
+type HomeScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "Home"
+>;
 const HomeScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const handleSignIn = () => {
-    navigation.navigate('SignIn');
+    navigation.navigate("SignIn");
   };
 
   return (
@@ -32,9 +50,11 @@ const HomeScreen = () => {
           >
             <Text style={styles.signInButtonText}>Sign In</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.createAccountButton}>
-            <Text style={styles.createAccountText}>New here? Create an account</Text>
+            <Text style={styles.createAccountText}>
+              New here? Create an account
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -45,67 +65,67 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f7f7f7',
+    backgroundColor: "#f7f7f7",
   },
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 40,
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
   },
   logoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginVertical: 60,
   },
   logoPlaceholder: {
     width: 150,
     height: 150,
     borderRadius: 75,
-    backgroundColor: '#e0e0e0',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#e0e0e0",
+    justifyContent: "center",
+    alignItems: "center",
   },
   logoText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#999',
+    fontWeight: "bold",
+    color: "#999",
   },
   buttonContainer: {
     marginBottom: 40,
   },
   signInButton: {
-    backgroundColor: '#4A90E2',
+    backgroundColor: "#4A90E2",
     paddingVertical: 16,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 16,
   },
   signInButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   createAccountButton: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: 8,
   },
   createAccountText: {
-    color: '#4A90E2',
+    color: "#4A90E2",
     fontSize: 16,
   },
 });
