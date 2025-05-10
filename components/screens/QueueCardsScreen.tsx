@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import moment, { Moment } from "moment";
+import moment from "moment";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 // Define types

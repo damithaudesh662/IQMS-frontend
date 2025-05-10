@@ -8,9 +8,8 @@ import {
   SafeAreaView,
   Alert,
 } from "react-native";
-
 import { Picker } from '@react-native-picker/picker';
-
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const AdminCreateQueueScreen = () => {
   const [form, setForm] = useState({
@@ -22,14 +21,44 @@ const AdminCreateQueueScreen = () => {
     endTime: "",
     timePerSlot: "",
     maxPeople: "",
-    queueType: "one-time", // "one-time" or "recurring"
-    recurrenceType: "", // "daily", "weekly", "monthly"
+    queueType: "one-time",
+    recurrenceType: "",
+  });
+
+  const [showPicker, setShowPicker] = useState({
+    startDate: false,
+    endDate: false,
+    startTime: false,
+    endTime: false,
   });
 
   const handleSubmit = () => {
-    // You can add validation and saving logic here
     console.log("Form submitted:", form);
     Alert.alert("Success", "Queue created successfully!");
+  };
+
+  const formatDate = (date) => {
+    return date.toISOString().split('T')[0];
+  };
+
+  const formatTime = (date) => {
+    return date.toTimeString().substring(0, 5);
+  };
+
+  const handlePickerChange = (type, event, selectedValue) => {
+    setShowPicker({ ...showPicker, [type]: false });
+    
+    if (selectedValue) {
+      if (type === 'startDate' || type === 'endDate') {
+        setForm({ ...form, [type]: formatDate(selectedValue) });
+      } else {
+        setForm({ ...form, [type]: formatTime(selectedValue) });
+      }
+    }
+  };
+
+  const togglePicker = (type) => {
+    setShowPicker({ ...showPicker, [type]: true });
   };
 
   return (
@@ -48,30 +77,71 @@ const AdminCreateQueueScreen = () => {
         value={form.serviceProvider}
         onChangeText={(text) => setForm({ ...form, serviceProvider: text })}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Start Date (YYYY-MM-DD)"
-        value={form.startDate}
-        onChangeText={(text) => setForm({ ...form, startDate: text })}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="End Date (YYYY-MM-DD)"
-        value={form.endDate}
-        onChangeText={(text) => setForm({ ...form, endDate: text })}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Start Time (e.g. 09:00)"
-        value={form.startTime}
-        onChangeText={(text) => setForm({ ...form, startTime: text })}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="End Time (e.g. 17:00)"
-        value={form.endTime}
-        onChangeText={(text) => setForm({ ...form, endTime: text })}
-      />
+
+      {/* Start Date Picker */}
+      <TouchableOpacity 
+        style={styles.input} 
+        onPress={() => togglePicker('startDate')}
+      >
+        <Text>{form.startDate || "Select Start Date"}</Text>
+      </TouchableOpacity>
+      {showPicker.startDate && (
+        <DateTimePicker
+          value={form.startDate ? new Date(form.startDate) : new Date()}
+          mode="date"
+          display="default"
+          onChange={(event, date) => handlePickerChange('startDate', event, date)}
+        />
+      )}
+
+      {/* End Date Picker */}
+      <TouchableOpacity 
+        style={styles.input} 
+        onPress={() => togglePicker('endDate')}
+      >
+        <Text>{form.endDate || "Select End Date"}</Text>
+      </TouchableOpacity>
+      {showPicker.endDate && (
+        <DateTimePicker
+          value={form.endDate ? new Date(form.endDate) : new Date()}
+          mode="date"
+          display="default"
+          onChange={(event, date) => handlePickerChange('endDate', event, date)}
+        />
+      )}
+
+      {/* Start Time Picker */}
+      <TouchableOpacity 
+        style={styles.input} 
+        onPress={() => togglePicker('startTime')}
+      >
+        <Text>{form.startTime || "Select Start Time"}</Text>
+      </TouchableOpacity>
+      {showPicker.startTime && (
+        <DateTimePicker
+          value={form.startTime ? new Date(`1970-01-01T${form.startTime}`) : new Date()}
+          mode="time"
+          display="default"
+          onChange={(event, time) => handlePickerChange('startTime', event, time)}
+        />
+      )}
+
+      {/* End Time Picker */}
+      <TouchableOpacity 
+        style={styles.input} 
+        onPress={() => togglePicker('endTime')}
+      >
+        <Text>{form.endTime || "Select End Time"}</Text>
+      </TouchableOpacity>
+      {showPicker.endTime && (
+        <DateTimePicker
+          value={form.endTime ? new Date(`1970-01-01T${form.endTime}`) : new Date()}
+          mode="time"
+          display="default"
+          onChange={(event, time) => handlePickerChange('endTime', event, time)}
+        />
+      )}
+
       <TextInput
         style={styles.input}
         placeholder="Time Per Slot (minutes)"
@@ -147,6 +217,7 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 15,
     fontSize: 16,
+    justifyContent: 'center',
   },
   dropdownContainer: {
     marginBottom: 15,
