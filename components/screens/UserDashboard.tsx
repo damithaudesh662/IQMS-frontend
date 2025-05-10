@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 
 type RootStackParamList = {
   UserDashboard: undefined;
+  InstituteMarketPlace: undefined;
 };
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
@@ -19,20 +20,20 @@ const UserDashboard = () => {
       <Text style={styles.subtitle}>Welcome, User!</Text>
       <TouchableOpacity
         style={styles.button}
-        // onPress={() => navigation.navigate("AdminProfileScreen")}
+        // onPress={() => navigation.navigate("InstituteMarketPlace")}
       >
         <Text style={styles.buttonText}>User Details</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        // onPress={() => navigation.navigate("QueueCardsScreen")}
+        onPress={() => navigation.navigate("InstituteMarketPlace")}
       >
         <Text style={styles.buttonText}>Browse Institutes</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
-        // onPress={() => navigation.navigate("AdminCreateQueueScreen")}
+        // onPress={() => navigation.navigate("InstituteMarketPlace")}
       >
         <Text style={styles.buttonText}>Subscribed Institutes</Text>
       </TouchableOpacity>
