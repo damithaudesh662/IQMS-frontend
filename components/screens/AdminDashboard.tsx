@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 type RootStackParamList = {
   AdminDashboard: undefined;
   AdminProfileScreen: undefined;
+  QueueCardsScreen: undefined;
   AdminCreateQueueScreen: undefined;
 };
 
@@ -31,6 +32,13 @@ const AdminDashboard = () => {
         onPress={() => navigation.navigate("AdminProfileScreen")}
       >
         <Text style={styles.buttonText}>Go to Admin Profile</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate("QueueCardsScreen")}
+      >
+        <Text style={styles.buttonText}>View Queues</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
