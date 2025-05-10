@@ -13,6 +13,7 @@ type RootStackParamList = {
   AdminDashboard: undefined;
   AdminProfileScreen: undefined;
   QueueCardsScreen: undefined;
+  AdminCreateQueueScreen: undefined;
 };
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
@@ -38,6 +39,12 @@ const AdminDashboard = () => {
         onPress={() => navigation.navigate("QueueCardsScreen")}
       >
         <Text style={styles.buttonText}>View Queues</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate("AdminCreateQueueScreen")}
+      >
+        <Text style={styles.buttonText}>Create Queue</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -66,11 +73,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 8,
     marginTop: 20,
+    width: "60%",
   },
   buttonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
+    textAlign: "center",
   },
 });
 
