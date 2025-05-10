@@ -7,6 +7,7 @@ import CreateUserAccount from "../screens/CreateUserAccount"; // Import your Cre
 import CreateAdminAccount from "../screens/CreateAdminAccount"; // Import your CreateAdminAccount screen
 import AdminDashboard from "../screens/AdminDashboard"; // Import your AdminDashboard screen
 import UserDashboard from "../screens/UserDashboard"; // Import your UserDashboard screen
+import AdminProfileScreen from "../screens/AdminProfile"; // Import your AdminProfile screen
 // Define the types for our navigation stack
 export type RootStackParamList = {
   Home: undefined;
@@ -15,6 +16,7 @@ export type RootStackParamList = {
   CreateAdminAccount: undefined; 
   UserDashboard: undefined; // Add the UserDashboard screen type
   AdminDashboard: undefined; // Add the AdminDashboard screen type
+  AdminProfileScreen: undefined; // Add the AdminProfile screen type
   // Add other screens here as needed
 };
 
@@ -35,6 +37,7 @@ const AppNavigator = () => {
       <Stack.Screen name="CreateAdminAccount" component={CreateAdminAccount} />
       <Stack.Screen name="AdminDashboard" component={AdminDashboard} /> 
       <Stack.Screen name="UserDashboard" component={UserDashboard} />
+      <Stack.Screen name="AdminProfileScreen" component={AdminProfileScreen} /> 
     </Stack.Navigator>
   );
 };
