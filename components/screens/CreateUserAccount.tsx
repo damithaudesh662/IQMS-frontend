@@ -13,40 +13,57 @@ import {
   Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import * as FileSystem from "expo-file-system";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type RootStackParamList = {
-  SignInScreen: undefined;
-  UserDashboard: undefined; // Add the CreateUserAccount screen type
-  AdminDashboard: undefined; // Add the CreateUserAccount screen type
+  CreateUserAccount: undefined;
+  CreateAdminAccount: undefined; // Add the CreateUserAccount screen type
 };
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
-  "SignInScreen"
+  "CreateUserAccount"
 >;
-const SignInScreen = () => {
+const CreateAccountScreen = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [address, setAddress] = useState("");
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
-  // const handleSignIn = () => {
-  //   // Implement your sign in logic here
-  //   console.log('Sign in with:', email, password);
-  // };
-  const handleSignIn = () => {
-    if (email === "usercsew@gmail.com" && password === "1234") {
-      navigation.navigate("UserDashboard"); // Change to your actual user dashboard screen name
-    } else if (email === "admincsew@gmail.com" && password === "1234") {
-      navigation.navigate("AdminDashboard"); // Change to your actual admin dashboard screen name
-    } else {
-      Alert.alert("Invalid Credentials", "Email or password is incorrect.");
+  const handleCreateAccount = async (isAdmin = false) => {
+    if (!name || !email || !password || !address) {
+      Alert.alert("Error", "Please fill all fields.");
+      return;
     }
+
+    const userInfo = {
+      name,
+      email,
+      password,
+      address,
+      role: isAdmin ? "admin" : "user",
+    };
+
+    const fileUri = FileSystem.documentDirectory + "config.json";
+
+    try {
+      await FileSystem.writeAsStringAsync(
+        fileUri,
+        JSON.stringify(userInfo, null, 2)
+      );
+      Alert.alert("Success", `${isAdmin ? "Admin" : "User"} account created!`);
+    } catch (error) {
+      console.error("File write error:", error);
+      Alert.alert("Error", "Failed to save user info.");
+    }
+    console.log("Saved to:", fileUri);
+    console.log("User Info:", userInfo);
   };
 
-  const handleForgotPassword = () => {
-    // Navigate to forgot password screen
-    console.log("Forgot password");
+  const handleCreateAdminAccount = async () => {
+    navigation.navigate("CreateAdminAccount"); // go back to login page
   };
 
   return (
@@ -58,13 +75,23 @@ const SignInScreen = () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.inner}>
             <View style={styles.header}>
-              <Text style={styles.title}>Sign In</Text>
+              <Text style={styles.title}>Create Account</Text>
               <Text style={styles.subtitle}>
-                Welcome back! Please sign in to continue
+                Fill the details below to register
               </Text>
             </View>
 
             <View style={styles.formContainer}>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your name"
+                  value={name}
+                  onChangeText={setName}
+                />
+              </View>
+
               <View style={styles.inputContainer}>
                 <Text style={styles.label}>Email</Text>
                 <TextInput
@@ -88,19 +115,28 @@ const SignInScreen = () => {
                 />
               </View>
 
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Address</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your address"
+                  value={address}
+                  onChangeText={setAddress}
+                />
+              </View>
+
               <TouchableOpacity
-                style={styles.forgotPasswordButton}
-                onPress={handleForgotPassword}
+                style={styles.createButton}
+                onPress={() => handleCreateAccount(false)}
               >
-                <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+                <Text style={styles.buttonText}>Create Account</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.signInButton}
-                onPress={handleSignIn}
-                activeOpacity={0.8}
+                style={styles.adminButton}
+                onPress={() => handleCreateAdminAccount()}
               >
-                <Text style={styles.signInButtonText}>Sign In</Text>
+                <Text style={styles.buttonText}>Create Admin Account</Text>
               </TouchableOpacity>
             </View>
 
@@ -167,22 +203,20 @@ const styles = StyleSheet.create({
     padding: 15,
     fontSize: 16,
   },
-  forgotPasswordButton: {
-    alignSelf: "flex-end",
-    marginBottom: 20,
-  },
-  forgotPasswordText: {
-    color: "#4A90E2",
-    fontSize: 14,
-  },
-  signInButton: {
+  createButton: {
     backgroundColor: "#4A90E2",
     paddingVertical: 16,
     borderRadius: 8,
     alignItems: "center",
     marginBottom: 16,
   },
-  signInButtonText: {
+  adminButton: {
+    backgroundColor: "#2D9CDB",
+    paddingVertical: 16,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  buttonText: {
     color: "white",
     fontSize: 18,
     fontWeight: "600",
@@ -198,4 +232,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignInScreen;
+export default CreateAccountScreen;

@@ -13,40 +13,46 @@ import {
   Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import * as FileSystem from "expo-file-system";
 
-type RootStackParamList = {
-  SignInScreen: undefined;
-  UserDashboard: undefined; // Add the CreateUserAccount screen type
-  AdminDashboard: undefined; // Add the CreateUserAccount screen type
-};
-
-type HomeScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "SignInScreen"
->;
-const SignInScreen = () => {
+const CreateAdminAccountScreen = () => {
+  const [instituteName, setInstituteName] = useState("");
+  const [ownerName, setOwnerName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigation = useNavigation<HomeScreenNavigationProp>();
+  const [address, setAddress] = useState("");
+  const navigation = useNavigation();
 
-  // const handleSignIn = () => {
-  //   // Implement your sign in logic here
-  //   console.log('Sign in with:', email, password);
-  // };
-  const handleSignIn = () => {
-    if (email === "usercsew@gmail.com" && password === "1234") {
-      navigation.navigate("UserDashboard"); // Change to your actual user dashboard screen name
-    } else if (email === "admincsew@gmail.com" && password === "1234") {
-      navigation.navigate("AdminDashboard"); // Change to your actual admin dashboard screen name
-    } else {
-      Alert.alert("Invalid Credentials", "Email or password is incorrect.");
+  const handleCreateAdmin = async () => {
+    if (!instituteName || !ownerName || !email || !password || !address) {
+      Alert.alert("Error", "Please fill all fields.");
+      return;
     }
-  };
 
-  const handleForgotPassword = () => {
-    // Navigate to forgot password screen
-    console.log("Forgot password");
+    const adminInfo = {
+      instituteName,
+      ownerName,
+      email,
+      password,
+      address,
+      role: "admin",
+    };
+
+    const fileUri = FileSystem.documentDirectory + "config.json";
+
+    try {
+      await FileSystem.writeAsStringAsync(
+        fileUri,
+        JSON.stringify(adminInfo, null, 2)
+      );
+      Alert.alert("Success", "Admin account created!");
+      navigation.goBack(); // go back to login page
+    } catch (error) {
+      console.error("File write error:", error);
+      Alert.alert("Error", "Failed to save admin info.");
+    }
+    console.log("Saved to:", fileUri);
+    console.log("Admin Info:", adminInfo);
   };
 
   return (
@@ -58,18 +64,36 @@ const SignInScreen = () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.inner}>
             <View style={styles.header}>
-              <Text style={styles.title}>Sign In</Text>
-              <Text style={styles.subtitle}>
-                Welcome back! Please sign in to continue
-              </Text>
+              <Text style={styles.title}>Create Admin Account</Text>
+              <Text style={styles.subtitle}>Fill the details below</Text>
             </View>
 
             <View style={styles.formContainer}>
               <View style={styles.inputContainer}>
+                <Text style={styles.label}>Institute Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter institute name"
+                  value={instituteName}
+                  onChangeText={setInstituteName}
+                />
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Owner Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter owner name"
+                  value={ownerName}
+                  onChangeText={setOwnerName}
+                />
+              </View>
+
+              <View style={styles.inputContainer}>
                 <Text style={styles.label}>Email</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Enter your email"
+                  placeholder="Enter email"
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
@@ -81,26 +105,28 @@ const SignInScreen = () => {
                 <Text style={styles.label}>Password</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Enter your password"
+                  placeholder="Enter password"
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry
                 />
               </View>
 
-              <TouchableOpacity
-                style={styles.forgotPasswordButton}
-                onPress={handleForgotPassword}
-              >
-                <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-              </TouchableOpacity>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Address</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter address"
+                  value={address}
+                  onChangeText={setAddress}
+                />
+              </View>
 
               <TouchableOpacity
-                style={styles.signInButton}
-                onPress={handleSignIn}
-                activeOpacity={0.8}
+                style={styles.createButton}
+                onPress={handleCreateAdmin}
               >
-                <Text style={styles.signInButtonText}>Sign In</Text>
+                <Text style={styles.buttonText}>Create Admin Account</Text>
               </TouchableOpacity>
             </View>
 
@@ -108,7 +134,7 @@ const SignInScreen = () => {
               style={styles.backButton}
               onPress={() => navigation.goBack()}
             >
-              <Text style={styles.backButtonText}>Back to Home</Text>
+              <Text style={styles.backButtonText}>Back to Login</Text>
             </TouchableOpacity>
           </View>
         </TouchableWithoutFeedback>
@@ -167,22 +193,14 @@ const styles = StyleSheet.create({
     padding: 15,
     fontSize: 16,
   },
-  forgotPasswordButton: {
-    alignSelf: "flex-end",
-    marginBottom: 20,
-  },
-  forgotPasswordText: {
-    color: "#4A90E2",
-    fontSize: 14,
-  },
-  signInButton: {
-    backgroundColor: "#4A90E2",
+  createButton: {
+    backgroundColor: "#2D9CDB",
     paddingVertical: 16,
     borderRadius: 8,
     alignItems: "center",
     marginBottom: 16,
   },
-  signInButtonText: {
+  buttonText: {
     color: "white",
     fontSize: 18,
     fontWeight: "600",
@@ -198,4 +216,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignInScreen;
+export default CreateAdminAccountScreen;
