@@ -8,7 +8,7 @@ import CreateAdminAccount from "../screens/CreateAdminAccount"; // Import your C
 import AdminDashboard from "../screens/AdminDashboard"; // Import your AdminDashboard screen
 import UserDashboard from "../screens/UserDashboard"; // Import your UserDashboard screen
 import AdminProfileScreen from "../screens/AdminProfile"; // Import your AdminProfile screen
-// Define the types for our navigation stack
+import AdminCreateQueueScreen from "../screens/AdminCreateQueue"; 
 export type RootStackParamList = {
   Home: undefined;
   SignIn: undefined;
@@ -17,6 +17,7 @@ export type RootStackParamList = {
   UserDashboard: undefined; // Add the UserDashboard screen type
   AdminDashboard: undefined; // Add the AdminDashboard screen type
   AdminProfileScreen: undefined; // Add the AdminProfile screen type
+  AdminCreateQueueScreen: undefined; 
   // Add other screens here as needed
 };
 
@@ -38,6 +39,7 @@ const AppNavigator = () => {
       <Stack.Screen name="AdminDashboard" component={AdminDashboard} /> 
       <Stack.Screen name="UserDashboard" component={UserDashboard} />
       <Stack.Screen name="AdminProfileScreen" component={AdminProfileScreen} /> 
+      <Stack.Screen name="AdminCreateQueueScreen" component={AdminCreateQueueScreen} />
     </Stack.Navigator>
   );
 };
