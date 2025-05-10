@@ -13,6 +13,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 type RootStackParamList = {
   Home: undefined;
   SignIn: undefined;
+  CreateUserAccount: undefined;
 };
 
 // Create a typed navigation prop
@@ -25,6 +26,11 @@ const HomeScreen = () => {
 
   const handleSignIn = () => {
     navigation.navigate("SignIn");
+  };
+
+  const handleCreateAccount = () => {
+    // Handle create account logic here
+    navigation.navigate("CreateUserAccount");
   };
 
   return (
@@ -51,9 +57,13 @@ const HomeScreen = () => {
             <Text style={styles.signInButtonText}>Sign In</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.createAccountButton}>
-            <Text style={styles.createAccountText}>
-              New here? Create an account
+          <TouchableOpacity
+            style={styles.createAccountButton}
+            onPress={handleCreateAccount}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.createAccountButton}>
+              New Here? Create an account
             </Text>
           </TouchableOpacity>
         </View>
