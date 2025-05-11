@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 type Institute = {
   id: string;
@@ -71,16 +70,14 @@ export default function InstituteMarketPlace() {
     );
   };
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>Institutes</Text>
-        <FlatList
-          data={institutes}
-          renderItem={renderInstituteCard}
-          keyExtractor={(item) => item.id}
-        />
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <Text style={styles.pageTitle}>Institutes</Text>
+      <FlatList
+        data={institutes}
+        renderItem={renderInstituteCard}
+        keyExtractor={(item) => item.id}
+      />
+    </View>
   );
 }
 
