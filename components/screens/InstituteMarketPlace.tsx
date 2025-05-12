@@ -1,5 +1,5 @@
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import {
   FlatList,
   StyleSheet,
@@ -16,6 +16,7 @@ type Institute = {
 
 type RootStackParamList = {
   InstituteMarketPlace: undefined;
+  InstituteScreen: undefined;
 };
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
@@ -59,8 +60,9 @@ export default function InstituteMarketPlace() {
       <TouchableOpacity
         style={styles.card}
         // onPress={() =>
-        //   navigation.navigate("QueueDetailsScreen", { queue: item })
+        //   navigation.navigate("InstitueScreen", { queue: item })
         // }
+        onPress={() => navigation.navigate("InstituteScreen")}
       >
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>{item.name}</Text>
