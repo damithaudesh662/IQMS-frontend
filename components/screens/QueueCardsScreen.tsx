@@ -1,14 +1,15 @@
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import moment from "moment";
 import React from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
   FlatList,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import moment from "moment";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import BlinkingCircle from "../institute/BlinkingCircle";
 
 // Define types
 type Queue = {
@@ -76,7 +77,7 @@ const QueueCardsScreen = () => {
       >
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>{item.name}</Text>
-          <BlinkingDot active={isActive} />
+          <BlinkingCircle style={styles.dot} ongoing={isActive} />
         </View>
       </TouchableOpacity>
     );
@@ -117,7 +118,6 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: "#fff",
-    opacity: 0.5,
   },
 });
 
