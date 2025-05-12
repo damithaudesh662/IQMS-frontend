@@ -26,6 +26,7 @@ export type RootStackParamList = {
   QueueCardsScreen: undefined;
   QueueDetailsScreen: undefined;
   InstituteMarketPlace: undefined;
+  CustomizePlatformScreen: undefined; 
   InstituteScreen: undefined;
   QueueSlotsScreen: { totalSlots: number; unavailableSlots: number[] };
   // Add other screens here as needed
@@ -73,6 +74,7 @@ const AppNavigator = ({ session, role }: { session: any; role: any }) => {
             name="AdminCreateQueueScreen"
             component={AdminCreateQueueScreen}
           />
+          <Stack.Screen name="CustomizePlatformScreen" component={AdminDashboard} />
         </>
       ) : (
         <>

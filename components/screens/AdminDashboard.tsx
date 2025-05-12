@@ -6,9 +6,13 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
+  ScrollView,
   TouchableOpacity,
 } from "react-native";
 import { supabase } from "../../lib/supabase";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import Icon from "react-native-vector-icons/MaterialIcons"; // Import icons
 
 type RootStackParamList = {
   AdminDashboard: undefined;
@@ -16,14 +20,17 @@ type RootStackParamList = {
   QueueCardsScreen: undefined;
   AdminCreateQueueScreen: undefined;
   SignIn: undefined;
+  CustomizePlatformScreen: undefined;
 };
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   "AdminDashboard"
 >;
+
 const AdminDashboard = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
+
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -46,30 +53,93 @@ const AdminDashboard = () => {
       ),
     });
   }, [navigation]);
+            
+  const stats = {
+    activeQueues: 5,
+    averageWaitTime: "12 min",
+    activeUsers: 134,
+    appointmentsToday: 48,
+  };
+
+  const instituteDetails = {
+    name: "Institute Name",
+    address: "123 Main Street, City, Country",
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Admin Dashboard</Text>
-      <Text style={styles.subtitle}>Welcome, Admin!</Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate("AdminProfileScreen")}
-      >
-        <Text style={styles.buttonText}>Go to Admin Profile</Text>
-      </TouchableOpacity>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.header}>Admin Dashboard</Text>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate("QueueCardsScreen")}
-      >
-        <Text style={styles.buttonText}>View Queues</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate("AdminCreateQueueScreen")}
-      >
-        <Text style={styles.buttonText}>Create Queue</Text>
-      </TouchableOpacity>
+        {/* Institute Info */}
+      <View style={styles.instituteInfoContainer}>
+        <Text style={styles.instituteName}>{instituteDetails.name}</Text>
+        <Text style={styles.instituteAddress}>{instituteDetails.address}</Text>
+      </View>
+
+        {/* Stats Grid */}
+        <View style={styles.statsContainer}>
+          <TouchableOpacity
+            style={[styles.statCard, styles.clickableCard]}
+            onPress={() => navigation.navigate("QueueCardsScreen")}
+          >
+            <View>
+              <Text style={[styles.statLabel, styles.clickableCardText]}>Active Queues</Text>
+              <Text style={[styles.statValue, styles.clickableCardText]}>{stats.activeQueues}</Text>
+            </View>
+          </TouchableOpacity>
+
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Avg Wait Time</Text>
+            <Text style={styles.statValue}>{stats.averageWaitTime}</Text>
+          </View>
+
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Active Users</Text>
+            <Text style={styles.statValue}>{stats.activeUsers}</Text>
+          </View>
+
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Appointments Today</Text>
+            <Text style={styles.statValue}>{stats.appointmentsToday}</Text>
+          </View>
+        </View>
+
+        {/* Navigation Buttons */}
+        <View style={styles.iconButtonContainer}>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => navigation.navigate("AdminProfileScreen")}
+          >
+            <Icon name="person" size={24} color="#fff" />
+            <Text style={styles.iconButtonText}>Profile</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => navigation.navigate("AdminCreateQueueScreen")}
+          >
+            <Icon name="queue" size={24} color="#fff" />
+            <Text style={styles.iconButtonText}>Create Queue</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => navigation.navigate("CustomizePlatformScreen")}
+          >
+            <Icon name="settings" size={24} color="#fff" />
+            <Text style={styles.iconButtonText}>Customize</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => navigation.navigate("AdminDashboard")}
+          >
+            <Icon name="bar-chart" size={24} color="#fff" />
+            <Text style={styles.iconButtonText}>Reports</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -77,32 +147,89 @@ const AdminDashboard = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#eef",
+    backgroundColor: "#f2f6ff",
   },
-  title: {
+  content: {
+    padding: 20,
+    paddingBottom: 40,
+  },
+  header: {
     fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 10,
+    textAlign: "center",
+    marginVertical: 20,
+    color: "#333",
   },
-  subtitle: {
-    fontSize: 18,
-    color: "#555",
-    marginBottom: 20,
+  statsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
-  button: {
+  statCard: {
+    backgroundColor: "#fff",
+    width: "47%",
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 16,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  clickableCard: {
+    backgroundColor: "#4A90E2",
+  },
+  clickableCardText: {
+    color: "#fff",
+  },
+  statLabel: {
+    fontSize: 14,
+    color: "#666",
+  },
+  statValue: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginTop: 4,
+    color: "#222",
+  },
+  iconButtonContainer: {
+    marginTop: 30,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  iconButton: {
     backgroundColor: "#4A90E2",
     paddingVertical: 14,
     paddingHorizontal: 24,
-    borderRadius: 8,
-    marginTop: 20,
-    width: "60%",
+    borderRadius: 10,
+    marginTop: 18,
+    width: "47%",
+    alignItems: "center",
+    elevation: 2,
+    flexDirection: "row",
+    justifyContent: "center",
   },
-  buttonText: {
+  iconButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
+    marginLeft: 8,
+  },
+  instituteInfoContainer: {
+    marginBottom: 32,
+    alignItems: "center",
+  },
+  instituteName: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  instituteAddress: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 4,
     textAlign: "center",
   },
 });
