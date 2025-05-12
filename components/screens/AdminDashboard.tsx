@@ -1,12 +1,15 @@
-import React from "react";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React, { useLayoutEffect } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
+  Alert,
   SafeAreaView,
+  StyleSheet,
+  Text,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+import { supabase } from "../../lib/supabase";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Icon from "react-native-vector-icons/MaterialIcons"; // Import icons
@@ -16,6 +19,7 @@ type RootStackParamList = {
   AdminProfileScreen: undefined;
   QueueCardsScreen: undefined;
   AdminCreateQueueScreen: undefined;
+  SignIn: undefined;
   CustomizePlatformScreen: undefined;
 };
 
@@ -27,6 +31,29 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<
 const AdminDashboard = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      title: "",
+      headerRight: () => (
+        <TouchableOpacity
+          style={{ marginRight: 16 }}
+          onPress={async () => {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+              Alert.alert("Error", error.message);
+            } else {
+              navigation.replace("SignIn");
+            }
+          }}
+        >
+          <Text style={{ color: "#007AFF", fontWeight: "bold" }}>Sign Out</Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+            
   const stats = {
     activeQueues: 5,
     averageWaitTime: "12 min",

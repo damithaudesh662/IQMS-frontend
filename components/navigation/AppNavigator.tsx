@@ -34,35 +34,64 @@ export type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const AppNavigator = () => {
+const AppNavigator = ({ session, role }: { session: any; role: any }) => {
+  const isSignedIn = !!session;
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      initialRouteName={
+        !isSignedIn
+          ? "Home"
+          : role === "admin"
+          ? "AdminDashboard"
+          : "UserDashboard"
+      }
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: "#f7f7f7" },
       }}
     >
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="SignIn" component={SignInScreen} />
-      <Stack.Screen name="CreateUserAccount" component={CreateUserAccount} />
-      <Stack.Screen name="CreateAdminAccount" component={CreateAdminAccount} />
-      <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
-      <Stack.Screen name="UserDashboard" component={UserDashboard} />
-      <Stack.Screen name="AdminProfileScreen" component={AdminProfileScreen} />
-      <Stack.Screen name="InstituteScreen" component={InstituteScreen} />
-      <Stack.Screen name="QueueSlotsScreen" component={QueueSlotsScreen} />
-      <Stack.Screen
-        name="AdminCreateQueueScreen"
-        component={AdminCreateQueueScreen}
-      />
-      <Stack.Screen name="QueueCardsScreen" component={QueueCardsScreen} />
-      <Stack.Screen name="QueueDetailsScreen" component={QueueDetailsScreen} />
-      <Stack.Screen
-        name="InstituteMarketPlace"
-        component={InstituteMarketPlace}
-      />
-      <Stack.Screen name="CustomizePlatformScreen" component={AdminDashboard} />
+      {!isSignedIn ? (
+        <>
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="SignIn" component={SignInScreen} />
+          <Stack.Screen
+            name="CreateUserAccount"
+            component={CreateUserAccount}
+          />
+          <Stack.Screen
+            name="CreateAdminAccount"
+            component={CreateAdminAccount}
+          />
+        </>
+      ) : role === "admin" ? (
+        <>
+          <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
+          <Stack.Screen
+            name="AdminProfileScreen"
+            component={AdminProfileScreen}
+          />
+          <Stack.Screen
+            name="AdminCreateQueueScreen"
+            component={AdminCreateQueueScreen}
+          />
+          <Stack.Screen name="CustomizePlatformScreen" component={AdminDashboard} />
+        </>
+      ) : (
+        <>
+          <Stack.Screen name="UserDashboard" component={UserDashboard} />
+          <Stack.Screen name="QueueCardsScreen" component={QueueCardsScreen} />
+          <Stack.Screen
+            name="QueueDetailsScreen"
+            component={QueueDetailsScreen}
+          />
+          <Stack.Screen name="QueueSlotsScreen" component={QueueSlotsScreen} />
+          <Stack.Screen name="InstituteScreen" component={InstituteScreen} />
+          <Stack.Screen
+            name="InstituteMarketPlace"
+            component={InstituteMarketPlace}
+          />
+        </>
+      )}
     </Stack.Navigator>
   );
 };

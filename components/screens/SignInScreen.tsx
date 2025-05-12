@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -14,11 +15,13 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { supabase } from "../../lib/supabase";
 
 type RootStackParamList = {
   SignInScreen: undefined;
   UserDashboard: undefined; // Add the CreateUserAccount screen type
   AdminDashboard: undefined; // Add the CreateUserAccount screen type
+  Home: undefined;
 };
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
@@ -30,17 +33,35 @@ const SignInScreen = () => {
   const [password, setPassword] = useState("");
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
-  // const handleSignIn = () => {
-  //   // Implement your sign in logic here
-  //   console.log('Sign in with:', email, password);
-  // };
-  const handleSignIn = () => {
-    if (email === "usercsew@gmail.com" && password === "1234") {
-      navigation.navigate("UserDashboard"); // Change to your actual user dashboard screen name
-    } else if (email === "admincsew@gmail.com" && password === "1234") {
-      navigation.navigate("AdminDashboard"); // Change to your actual admin dashboard screen name
+  const handleSignIn = async () => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      Alert.alert(error.message);
     } else {
-      Alert.alert("Invalid Credentials", "Email or password is incorrect.");
+      if (data?.user) {
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", data.user.id)
+          .single();
+
+        if (!profileError) {
+          const role = profile?.role;
+          if (role === "user") {
+            navigation.replace("UserDashboard");
+          } else if (role === "admin") {
+            navigation.replace("AdminDashboard");
+          } else {
+            Alert.alert("No authorization. Please contact an admin");
+          }
+        } else {
+          Alert.alert("No authorization. Please contact an admin");
+        }
+      }
     }
   };
 
@@ -53,64 +74,73 @@ const SignInScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
         style={styles.container}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.inner}>
-            <View style={styles.header}>
-              <Text style={styles.title}>Sign In</Text>
-              <Text style={styles.subtitle}>
-                Welcome back! Please sign in to continue
-              </Text>
-            </View>
-
-            <View style={styles.formContainer}>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Email</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your email"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
+          <ScrollView
+            contentContainerStyle={styles.inner}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.inner}>
+              <View style={styles.header}>
+                <Text style={styles.title}>Sign In</Text>
+                <Text style={styles.subtitle}>
+                  Welcome back! Please sign in to continue
+                </Text>
               </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Password</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                />
+              <View style={styles.formContainer}>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Email</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your email"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Password</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                  />
+                </View>
+
+                <TouchableOpacity
+                  style={styles.forgotPasswordButton}
+                  onPress={handleForgotPassword}
+                >
+                  <Text style={styles.forgotPasswordText}>
+                    Forgot password?
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.signInButton}
+                  onPress={handleSignIn}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.signInButtonText}>Sign In</Text>
+                </TouchableOpacity>
               </View>
 
               <TouchableOpacity
-                style={styles.forgotPasswordButton}
-                onPress={handleForgotPassword}
+                style={styles.backButton}
+                onPress={() => navigation.replace("Home")}
               >
-                <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.signInButton}
-                onPress={handleSignIn}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.signInButtonText}>Sign In</Text>
+                <Text style={styles.backButtonText}>Back to Home</Text>
               </TouchableOpacity>
             </View>
-
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => navigation.goBack()}
-            >
-              <Text style={styles.backButtonText}>Back to Home</Text>
-            </TouchableOpacity>
-          </View>
+          </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -126,7 +156,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   inner: {
-    flex: 1,
+    flexGrow: 1,
     padding: 20,
     justifyContent: "space-between",
   },
