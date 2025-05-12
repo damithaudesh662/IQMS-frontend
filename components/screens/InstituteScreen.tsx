@@ -1,19 +1,49 @@
-import { useNavigation } from "@react-navigation/native";
+import { QueueGroups } from "@/interfaces/QueueItem";
+import { formatQueues } from "@/utils/QueueUtil";
+import { RouteProp, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, SafeAreaView, Text, View } from "react-native";
+import * as instituteService from "../../services/instituteService";
 import QueueTable from "../institute/QueueTable";
 
 type RootStackParamList = {
-  InstituteScreen: undefined; // Add the CreateUserAccount screen type
+  InstituteScreen: { institute: Institute }; // Add the CreateUserAccount screen type
+};
+
+type Institute = {
+  id: string;
+  institute_name: string;
+  field: string;
+  address: string;
+};
+
+type Props = {
+  route: RouteProp<RootStackParamList, "InstituteScreen">;
 };
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   "InstituteScreen"
 >;
-const InstituteScreen = () => {
+const InstituteScreen: React.FC<Props> = ({ route }) => {
+  const { institute } = route.params;
   const navigation = useNavigation<HomeScreenNavigationProp>();
+  const [queues, setQueues] = useState<QueueGroups>({
+    upcoming: [],
+    ongoing: [],
+  });
+
+  useEffect(() => {
+    const fetchQueues = async () => {
+      const queuesList = await instituteService.getQueuesByInstituteID(
+        Number(institute.id)
+      );
+      setQueues(formatQueues(queuesList));
+    };
+    fetchQueues();
+  }, []);
+
   return (
     <SafeAreaView>
       <View className="flex-row items-center space-x-4">
@@ -25,12 +55,12 @@ const InstituteScreen = () => {
         {/* Text Details */}
         <View className="flex-1">
           <Text className="text-xl font-semibold text-gray-800">
-            AIESEC in University of Moratuwa
+            {institute.institute_name}
           </Text>
-          <Text className="text-base text-gray-600">Moratuwa, Sri Lanka</Text>
+          <Text className="text-base text-gray-600">{institute.address}</Text>
         </View>
       </View>
-      <QueueTable />
+      <QueueTable queues={queues} />
     </SafeAreaView>
   );
 };

@@ -1,15 +1,18 @@
 import { RouteProp } from "@react-navigation/native";
-import React from "react";
+import React, { useState } from "react";
 import {
+  Alert,
   FlatList,
   SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
 } from "react-native";
+import * as instituteService from "../../services/instituteService";
 import { RootStackParamList } from "../navigation/AppNavigator";
 
 interface QueueSlotsScreenProps {
+  id: number;
   totalSlots?: number;
   unavailableSlots?: number[];
 }
@@ -19,10 +22,26 @@ type Props = {
 };
 
 const QueueSlotsScreen: React.FC<Props> = ({ route }) => {
-  const { totalSlots, unavailableSlots } = route.params;
+  const { id, totalSlots, unavailableSlots } = route.params;
+  const [unavailable_slots, set_unavailable_slots] = useState(unavailableSlots);
+
+  const handleSelectSlot = async (item: number) => {
+    let updatedUnavailableSlots = [...unavailable_slots, item];
+    const success = await instituteService.updateUnavailableSlotsForQueue(
+      id,
+      updatedUnavailableSlots
+    );
+    if (success) {
+      set_unavailable_slots(updatedUnavailableSlots);
+      Alert.alert("Slot booked successfully!");
+    } else {
+      Alert.alert("Unable to book the slot at the moment");
+    }
+  };
+
   const renderSlot = ({ item }: { item: number }) => {
     const isUnavailable = unavailableSlots
-      ? unavailableSlots.includes(item)
+      ? unavailable_slots.includes(item)
       : true;
 
     return (
@@ -32,7 +51,7 @@ const QueueSlotsScreen: React.FC<Props> = ({ route }) => {
           styles.slot,
           isUnavailable ? styles.unavailableSlot : styles.availableSlot,
         ]}
-        onPress={() => console.log("Slot selected:", item)}
+        onPress={() => handleSelectSlot(item)}
       >
         <Text style={[styles.slotText, isUnavailable && { color: "#aaa" }]}>
           {item}

@@ -1,3 +1,4 @@
+import { QueueGroups, QueueItem } from "@/interfaces/QueueItem";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -16,60 +17,12 @@ import {
 import { RootStackParamList } from "../navigation/AppNavigator";
 import BlinkingCircle from "./BlinkingCircle";
 
-type QueueItem = {
-  id: string;
-  queue: string;
-  date: string;
-  start: string;
-  end: string;
-  ongoing: boolean;
-};
-
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-const queues = {
-  upcoming: [
-    {
-      id: "1",
-      queue: "Queue A",
-      date: "2025-05-11",
-      start: "10:00",
-      end: "11:00",
-      ongoing: false,
-    },
-    {
-      id: "2",
-      queue: "Queue B",
-      date: "2025-05-12",
-      start: "12:00",
-      end: "13:00",
-      ongoing: false,
-    },
-  ],
-  ongoing: [
-    {
-      id: "3",
-      queue: "Queue C",
-      date: "2025-05-10",
-      start: "09:00",
-      end: "10:00",
-      ongoing: true,
-    },
-    {
-      id: "4",
-      queue: "Queue D",
-      date: "2025-05-10",
-      start: "11:00",
-      end: "12:00",
-      ongoing: true,
-    },
-  ],
-};
-
-export default function QueueTable() {
+export default function QueueTable({ queues }: { queues: QueueGroups }) {
   const navigation = useNavigation<NavigationProp>();
   const [selectedTab, setSelectedTab] = useState<"upcoming" | "ongoing">(
-    "upcoming"
+    "ongoing"
   );
   const [search, setSearch] = useState({ name: "", date: "", start: "" });
 
@@ -81,11 +34,11 @@ export default function QueueTable() {
   // Filters
   const data = useMemo(() => {
     return rawData.filter((item) => {
-      const nameMatch = item.queue
+      const nameMatch = item.queue_name
         .toLowerCase()
         .includes(search.name.toLowerCase());
       const dateMatch = item.date.includes(search.date);
-      const startMatch = item.start.includes(search.start);
+      const startMatch = item.start_time.includes(search.start);
       return nameMatch && dateMatch && startMatch;
     });
   }, [rawData, search]);
@@ -119,16 +72,17 @@ export default function QueueTable() {
       className="flex-row justify-between items-center p-4 border-b border-gray-200"
       onPress={() =>
         navigation.navigate("QueueSlotsScreen", {
-          totalSlots: 30,
-          unavailableSlots: [1, 2, 5, 9],
+          id: item.id,
+          totalSlots: item.no_of_slots,
+          unavailableSlots: item.unavailable_slots,
         })
       }
     >
-      <Text className="w-1/4 text-gray-800">{item.queue}</Text>
+      <Text className="w-1/4 text-gray-800">{item.queue_name}</Text>
       <Text className="w-1/4 text-gray-600">{item.date}</Text>
-      <Text className="w-1/4 text-gray-600">{item.start}</Text>
-      <Text className="w-1/4 text-gray-600">{item.end}</Text>
-      <BlinkingCircle ongoing={item.ongoing} />
+      <Text className="w-1/4 text-gray-600">{item.start_time}</Text>
+      <Text className="w-1/4 text-gray-600">{item.end_time}</Text>
+      <BlinkingCircle ongoing={item.is_ongoing} />
     </TouchableOpacity>
   );
 
@@ -136,21 +90,6 @@ export default function QueueTable() {
     <View className="p-4">
       {/* Tabs */}
       <View className="flex-row justify-between mb-4">
-        <TouchableOpacity
-          className={`px-4 py-2 rounded-md ${
-            selectedTab === "upcoming" ? "bg-blue-500" : "bg-gray-200"
-          }`}
-          onPress={() => setSelectedTab("upcoming")}
-        >
-          <Text
-            className={`${
-              selectedTab === "upcoming" ? "text-white" : "text-gray-800"
-            }`}
-          >
-            Upcoming Queues
-          </Text>
-        </TouchableOpacity>
-
         <TouchableOpacity
           className={`px-4 py-2 rounded-md ${
             selectedTab === "ongoing" ? "bg-blue-500" : "bg-gray-200"
@@ -163,6 +102,21 @@ export default function QueueTable() {
             }`}
           >
             Ongoing Queues
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className={`px-4 py-2 rounded-md ${
+            selectedTab === "upcoming" ? "bg-blue-500" : "bg-gray-200"
+          }`}
+          onPress={() => setSelectedTab("upcoming")}
+        >
+          <Text
+            className={`${
+              selectedTab === "upcoming" ? "text-white" : "text-gray-800"
+            }`}
+          >
+            Upcoming Queues
           </Text>
         </TouchableOpacity>
       </View>
