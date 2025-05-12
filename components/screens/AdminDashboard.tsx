@@ -3,16 +3,16 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useLayoutEffect } from "react";
 import {
   Alert,
+  Platform,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
-  ScrollView,
   TouchableOpacity,
+  View,
 } from "react-native";
-import { supabase } from "../../lib/supabase";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Icon from "react-native-vector-icons/MaterialIcons"; // Import icons
+import { supabase } from "../../lib/supabase";
 
 type RootStackParamList = {
   AdminDashboard: undefined;
@@ -31,29 +31,38 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<
 const AdminDashboard = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
       title: "",
       headerRight: () => (
-        <TouchableOpacity
-          style={{ marginRight: 16 }}
-          onPress={async () => {
-            const { error } = await supabase.auth.signOut();
-            if (error) {
-              Alert.alert("Error", error.message);
-            } else {
-              navigation.replace("SignIn");
-            }
+        <View
+          style={{
+            marginTop: Platform.OS === "android" ? 8 : 0,
+            marginRight: 8,
           }}
         >
-          <Text style={{ color: "#007AFF", fontWeight: "bold" }}>Sign Out</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-blue-500 px-4 py-2 rounded-lg mr-4"
+            activeOpacity={0.8}
+            onPress={async () => {
+              const { error } = await supabase.auth.signOut();
+              if (error) {
+                Alert.alert("Error", error.message);
+              } else {
+                navigation.replace("SignIn");
+              }
+            }}
+          >
+            <Text className="text-white font-bold text-base text-center">
+              Sign Out
+            </Text>
+          </TouchableOpacity>
+        </View>
       ),
     });
   }, [navigation]);
-            
+
   const stats = {
     activeQueues: 5,
     averageWaitTime: "12 min",
@@ -64,7 +73,7 @@ const AdminDashboard = () => {
   const instituteDetails = {
     name: "Institute Name",
     address: "123 Main Street, City, Country",
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -72,10 +81,12 @@ const AdminDashboard = () => {
         <Text style={styles.header}>Admin Dashboard</Text>
 
         {/* Institute Info */}
-      <View style={styles.instituteInfoContainer}>
-        <Text style={styles.instituteName}>{instituteDetails.name}</Text>
-        <Text style={styles.instituteAddress}>{instituteDetails.address}</Text>
-      </View>
+        <View style={styles.instituteInfoContainer}>
+          <Text style={styles.instituteName}>{instituteDetails.name}</Text>
+          <Text style={styles.instituteAddress}>
+            {instituteDetails.address}
+          </Text>
+        </View>
 
         {/* Stats Grid */}
         <View style={styles.statsContainer}>
@@ -84,8 +95,12 @@ const AdminDashboard = () => {
             onPress={() => navigation.navigate("QueueCardsScreen")}
           >
             <View>
-              <Text style={[styles.statLabel, styles.clickableCardText]}>Active Queues</Text>
-              <Text style={[styles.statValue, styles.clickableCardText]}>{stats.activeQueues}</Text>
+              <Text style={[styles.statLabel, styles.clickableCardText]}>
+                Active Queues
+              </Text>
+              <Text style={[styles.statValue, styles.clickableCardText]}>
+                {stats.activeQueues}
+              </Text>
             </View>
           </TouchableOpacity>
 
@@ -145,6 +160,20 @@ const AdminDashboard = () => {
 };
 
 const styles = StyleSheet.create({
+  button: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginRight: 16,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
+  },
+
   container: {
     flex: 1,
     backgroundColor: "#f2f6ff",
