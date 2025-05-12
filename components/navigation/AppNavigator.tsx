@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 
+import { Institute } from "@/interfaces/Institute";
 import AdminCreateQueueScreen from "../screens/AdminCreateQueue";
 import AdminDashboard from "../screens/AdminDashboard"; // Import your AdminDashboard screen
 import AdminProfileScreen from "../screens/AdminProfile"; // Import your AdminProfile screen
@@ -27,8 +28,12 @@ export type RootStackParamList = {
   QueueDetailsScreen: undefined;
   InstituteMarketPlace: undefined;
   CustomizePlatformScreen: undefined;
-  InstituteScreen: undefined;
-  QueueSlotsScreen: { totalSlots: number; unavailableSlots: number[] };
+  InstituteScreen: { institute: Institute };
+  QueueSlotsScreen: {
+    id: string;
+    totalSlots: number;
+    unavailableSlots: number[];
+  };
   // Add other screens here as needed
 };
 

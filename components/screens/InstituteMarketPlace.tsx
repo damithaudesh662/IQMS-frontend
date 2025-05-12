@@ -1,5 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useEffect, useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -7,16 +8,18 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import * as instituteService from "../../services/instituteService";
 
 type Institute = {
   id: string;
-  name: string;
+  institute_name: string;
   field: string;
+  address: string;
 };
 
 type RootStackParamList = {
   InstituteMarketPlace: undefined;
-  InstituteScreen: undefined;
+  InstituteScreen: { institute: Institute };
 };
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
@@ -24,36 +27,46 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<
   "InstituteMarketPlace"
 >;
 
-const institutes: Institute[] = [
-  {
-    id: "1",
-    name: "Sunrise General Hospital",
-    field: "Healthcare",
-  },
-  {
-    id: "2",
-    name: "Evergreen Medical Center",
-    field: "General Medicine",
-  },
-  {
-    id: "3",
-    name: "City Heart Hospital",
-    field: "Cardiology",
-  },
-  {
-    id: "4",
-    name: "Pet Wellness Clinic",
-    field: "Veterinary Medicine",
-  },
-  {
-    id: "5",
-    name: "Green Paws Vet Center",
-    field: "Animal Health",
-  },
-];
+// const institutes: Institute[] = [
+//   {
+//     id: "1",
+//     name: "Sunrise General Hospital",
+//     field: "Healthcare",
+//   },
+//   {
+//     id: "2",
+//     name: "Evergreen Medical Center",
+//     field: "General Medicine",
+//   },
+//   {
+//     id: "3",
+//     name: "City Heart Hospital",
+//     field: "Cardiology",
+//   },
+//   {
+//     id: "4",
+//     name: "Pet Wellness Clinic",
+//     field: "Veterinary Medicine",
+//   },
+//   {
+//     id: "5",
+//     name: "Green Paws Vet Center",
+//     field: "Animal Health",
+//   },
+// ];
 
 export default function InstituteMarketPlace() {
   const navigation = useNavigation<HomeScreenNavigationProp>();
+  const [institutes, setInstitutes] = useState<Institute[]>([]);
+
+  useEffect(() => {
+    const fetchInstitutes = async () => {
+      const institutes = await instituteService.getAllInstitutes();
+      setInstitutes(institutes);
+    };
+
+    fetchInstitutes();
+  }, []);
 
   const renderInstituteCard = ({ item }: { item: Institute }) => {
     return (
@@ -62,10 +75,12 @@ export default function InstituteMarketPlace() {
         // onPress={() =>
         //   navigation.navigate("InstitueScreen", { queue: item })
         // }
-        onPress={() => navigation.navigate("InstituteScreen")}
+        onPress={() =>
+          navigation.navigate("InstituteScreen", { institute: item })
+        }
       >
         <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>{item.name}</Text>
+          <Text style={styles.cardTitle}>{item.institute_name}</Text>
           <Text style={styles.cardDescription}>{item.field}</Text>
         </View>
       </TouchableOpacity>

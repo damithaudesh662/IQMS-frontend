@@ -1,13 +1,13 @@
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 // Define your navigation parameter list type
 type RootStackParamList = {
@@ -38,7 +38,7 @@ const HomeScreen = () => {
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Welcome</Text>
-          <Text style={styles.subtitle}>Your App Tagline Here</Text>
+          <Text style={styles.subtitle}>No More Waiting In Lines!</Text>
         </View>
 
         <View style={styles.logoContainer}>
@@ -133,6 +133,7 @@ const styles = StyleSheet.create({
   createAccountButton: {
     alignItems: "center",
     padding: 8,
+    color: "#4A90E2",
   },
   createAccountText: {
     color: "#4A90E2",
