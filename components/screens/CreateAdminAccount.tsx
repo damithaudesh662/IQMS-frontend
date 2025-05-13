@@ -1,24 +1,28 @@
+import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  SafeAreaView,
+  Alert,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
   TouchableWithoutFeedback,
-  Keyboard,
-  Alert,
+  View,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import * as FileSystem from "expo-file-system";
+import * as instituteService from "../../services/instituteService";
 
 const CreateAdminAccountScreen = () => {
   const [instituteName, setInstituteName] = useState("");
+  const [field, setField] = useState("");
   const [ownerName, setOwnerName] = useState("");
   const [email, setEmail] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
   const [password, setPassword] = useState("");
   const [address, setAddress] = useState("");
   const navigation = useNavigation();
@@ -30,113 +34,143 @@ const CreateAdminAccountScreen = () => {
     }
 
     const adminInfo = {
-      instituteName,
-      ownerName,
-      email,
-      password,
-      address,
-      role: "admin",
+      instituteName: instituteName,
+      displayName: ownerName,
+      email: email,
+      password: password,
+      contactEmail: contactEmail,
+      contactNumber: contactNumber,
+      address: address,
+      field: field,
     };
 
-    const fileUri = FileSystem.documentDirectory + "config.json";
-
-    try {
-      await FileSystem.writeAsStringAsync(
-        fileUri,
-        JSON.stringify(adminInfo, null, 2)
-      );
-      Alert.alert("Success", "Admin account created!");
-      navigation.goBack(); // go back to login page
-    } catch (error) {
-      console.error("File write error:", error);
-      Alert.alert("Error", "Failed to save admin info.");
-    }
-    console.log("Saved to:", fileUri);
-    console.log("Admin Info:", adminInfo);
+    const { error } = await instituteService.createInstituteAndAdmin(adminInfo);
+    if (error) Alert.alert(error.message);
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
         style={styles.container}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.inner}>
-            <View style={styles.header}>
-              <Text style={styles.title}>Create Admin Account</Text>
-              <Text style={styles.subtitle}>Fill the details below</Text>
-            </View>
-
-            <View style={styles.formContainer}>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Institute Name</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter institute name"
-                  value={instituteName}
-                  onChangeText={setInstituteName}
-                />
+          <ScrollView
+            contentContainerStyle={styles.inner}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.inner}>
+              <View style={styles.header}>
+                <Text style={styles.title}>Create Admin Account</Text>
+                <Text style={styles.subtitle}>Fill the details below</Text>
               </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Owner Name</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter owner name"
-                  value={ownerName}
-                  onChangeText={setOwnerName}
-                />
-              </View>
+              <View style={styles.formContainer}>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Institute Name</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter institute name"
+                    value={instituteName}
+                    onChangeText={setInstituteName}
+                  />
+                </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Email</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter email"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Field</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter Field"
+                    value={field}
+                    onChangeText={setField}
+                  />
+                </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Password</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter password"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                />
-              </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Owner Name</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter owner name"
+                    value={ownerName}
+                    onChangeText={setOwnerName}
+                  />
+                </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Address</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter address"
-                  value={address}
-                  onChangeText={setAddress}
-                />
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Email</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter email"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Contact Email</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter email"
+                    value={contactEmail}
+                    onChangeText={setContactEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Contact Number</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter phone number"
+                    value={contactNumber}
+                    onChangeText={setContactNumber}
+                    keyboardType="phone-pad"
+                    autoCapitalize="none"
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Password</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Address</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter address"
+                    value={address}
+                    onChangeText={setAddress}
+                  />
+                </View>
+
+                <TouchableOpacity
+                  style={styles.createButton}
+                  onPress={handleCreateAdmin}
+                >
+                  <Text style={styles.buttonText}>Create Admin Account</Text>
+                </TouchableOpacity>
               </View>
 
               <TouchableOpacity
-                style={styles.createButton}
-                onPress={handleCreateAdmin}
+                style={styles.backButton}
+                onPress={() => navigation.goBack()}
               >
-                <Text style={styles.buttonText}>Create Admin Account</Text>
+                <Text style={styles.backButtonText}>Back to Login</Text>
               </TouchableOpacity>
             </View>
-
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => navigation.goBack()}
-            >
-              <Text style={styles.backButtonText}>Back to Login</Text>
-            </TouchableOpacity>
-          </View>
+          </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -152,7 +186,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   inner: {
-    flex: 1,
+    flexGrow: 1,
     padding: 20,
     justifyContent: "space-between",
   },

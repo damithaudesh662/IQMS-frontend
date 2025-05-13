@@ -1,6 +1,6 @@
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import React, { useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   Alert,
   Platform,
@@ -13,9 +13,10 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons"; // Import icons
 import { supabase } from "../../lib/supabase";
+import * as adminService from "../../services/adminService";
 
 type RootStackParamList = {
-  AdminDashboard: undefined;
+  AdminDashboard: { userID: string };
   AdminProfileScreen: undefined;
   QueueCardsScreen: undefined;
   AdminCreateQueueScreen: undefined;
@@ -28,8 +29,36 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<
   "AdminDashboard"
 >;
 
-const AdminDashboard = () => {
+type Props = {
+  route: RouteProp<RootStackParamList, "AdminDashboard">;
+};
+
+const AdminDashboard: React.FC<Props> = ({ route }) => {
+  const { userID } = route?.params ?? {};
+  const [instituteName, setInstituteName] = useState("");
+  const [instituteAddress, setInstituteAddress] = useState("");
+  const [queueCount, setQueueCount] = useState(0);
+
+  console.log("UserID", userID);
   const navigation = useNavigation<HomeScreenNavigationProp>();
+
+  useEffect(() => {
+    const fetchAdminDetails = async () => {
+      const { error, instituteName, instituteAddress, queueCount } =
+        await adminService.getDetailsForAdminDashboard(userID);
+      if (error) {
+        Alert.alert(error.message);
+      } else {
+        setInstituteName(instituteName);
+        setInstituteAddress(instituteAddress);
+        setQueueCount(queueCount);
+      }
+    };
+
+    if (userID) {
+      fetchAdminDetails();
+    }
+  }, [userID]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -70,11 +99,6 @@ const AdminDashboard = () => {
     appointmentsToday: 48,
   };
 
-  const instituteDetails = {
-    name: "Institute Name",
-    address: "123 Main Street, City, Country",
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -82,10 +106,8 @@ const AdminDashboard = () => {
 
         {/* Institute Info */}
         <View style={styles.instituteInfoContainer}>
-          <Text style={styles.instituteName}>{instituteDetails.name}</Text>
-          <Text style={styles.instituteAddress}>
-            {instituteDetails.address}
-          </Text>
+          <Text style={styles.instituteName}>{instituteName}</Text>
+          <Text style={styles.instituteAddress}>{instituteAddress}</Text>
         </View>
 
         {/* Stats Grid */}
@@ -99,7 +121,7 @@ const AdminDashboard = () => {
                 Active Queues
               </Text>
               <Text style={[styles.statValue, styles.clickableCardText]}>
-                {stats.activeQueues}
+                {queueCount}
               </Text>
             </View>
           </TouchableOpacity>
@@ -146,10 +168,7 @@ const AdminDashboard = () => {
             <Text style={styles.iconButtonText}>Customize</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => navigation.navigate("AdminDashboard")}
-          >
+          <TouchableOpacity style={styles.iconButton} onPress={() => {}}>
             <Icon name="bar-chart" size={24} color="#fff" />
             <Text style={styles.iconButtonText}>Reports</Text>
           </TouchableOpacity>
