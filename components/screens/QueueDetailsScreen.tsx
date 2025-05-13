@@ -442,33 +442,24 @@
 //   },
 // });
 
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  SafeAreaView,
-  ScrollView,
-} from "react-native";
+import { QueueItem } from "@/interfaces/QueueItem";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import moment from "moment";
-
-type QueueDetails = {
-  id: string;
-  name: string;
-  institution: string;
-  startTime: string;
-  endTime: string;
-  joined: number;
-  max: number;
-};
+import React, { useEffect, useState } from "react";
+import {
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 type RouteParams = {
   QueueDetails: {
-    queue: QueueDetails;
+    queue: QueueItem;
   };
 };
 
@@ -484,11 +475,11 @@ const QueueDetailsScreen = () => {
 
   useEffect(() => {
     const now = new Date();
-    const start = new Date(queue.startTime);
+    const start = new Date(queue.start_time);
     setIsStarted(now >= start);
-  }, [queue.startTime]);
+  }, [queue.start_time]);
 
-  const handleChange = (key: keyof QueueDetails, value: string | number) => {
+  const handleChange = (key: keyof QueueItem, value: string | number) => {
     setQueue((prev) => ({
       ...prev,
       [key]: value,
@@ -504,7 +495,7 @@ const QueueDetailsScreen = () => {
   };
 
   const handleDateChange = (
-    key: "startTime" | "endTime",
+    key: "start_time" | "end_time",
     event: any,
     selectedDate?: Date
   ) => {
@@ -517,7 +508,7 @@ const QueueDetailsScreen = () => {
     if (selectedDate) {
       const currentDate = new Date(queue[key]);
       let newDate: Date;
-      if (key === "startTime") {
+      if (key === "start_time") {
         if (editingStart === "date") {
           newDate = new Date(selectedDate);
           newDate.setHours(currentDate.getHours(), currentDate.getMinutes());
@@ -555,7 +546,7 @@ const QueueDetailsScreen = () => {
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.card}>
           <View style={styles.header}>
-            <Text style={styles.title}>{queue.name}</Text>
+            <Text style={styles.title}>{queue.queue_name}</Text>
             <View
               style={[styles.indicator, isStarted ? styles.green : styles.red]}
             />
@@ -575,18 +566,8 @@ const QueueDetailsScreen = () => {
             <Text style={styles.label}>Queue Name</Text>
             <TextInput
               style={[styles.input, !isEditing && styles.disabledInput]}
-              value={queue.name}
-              onChangeText={(text) => handleChange("name", text)}
-              editable={isEditing}
-            />
-          </View>
-
-          <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Institution</Text>
-            <TextInput
-              style={[styles.input, !isEditing && styles.disabledInput]}
-              value={queue.institution}
-              onChangeText={(text) => handleChange("institution", text)}
+              value={queue.queue_name}
+              onChangeText={(text) => handleChange("queue_name", text)}
               editable={isEditing}
             />
           </View>
@@ -599,7 +580,7 @@ const QueueDetailsScreen = () => {
               onPress={() => showPicker("date", "start")}
             >
               <Text style={[styles.input, !isEditing && styles.disabledInput]}>
-                {moment(queue.startTime).format("YYYY-MM-DD")}
+                {moment(queue.date).format("YYYY-MM-DD")}
               </Text>
             </TouchableOpacity>
 
@@ -609,30 +590,20 @@ const QueueDetailsScreen = () => {
               onPress={() => showPicker("time", "start")}
             >
               <Text style={[styles.input, !isEditing && styles.disabledInput]}>
-                {moment(queue.startTime).format("HH:mm")}
+                {moment(queue.start_time).format("HH:mm")}
               </Text>
             </TouchableOpacity>
           </View>
 
           {/* End Date/Time */}
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>End Date</Text>
-            <TouchableOpacity
-              disabled={!isEditing}
-              onPress={() => showPicker("date", "end")}
-            >
-              <Text style={[styles.input, !isEditing && styles.disabledInput]}>
-                {moment(queue.endTime).format("YYYY-MM-DD")}
-              </Text>
-            </TouchableOpacity>
-
             <Text style={styles.label}>End Time</Text>
             <TouchableOpacity
               disabled={!isEditing}
               onPress={() => showPicker("time", "end")}
             >
               <Text style={[styles.input, !isEditing && styles.disabledInput]}>
-                {moment(queue.endTime).format("HH:mm")}
+                {moment(queue.end_time).format("HH:mm")}
               </Text>
             </TouchableOpacity>
           </View>
@@ -641,10 +612,9 @@ const QueueDetailsScreen = () => {
             <Text style={styles.label}>Joined</Text>
             <TextInput
               style={[styles.input, !isEditing && styles.disabledInput]}
-              value={String(queue.joined)}
-              onChangeText={(text) => handleChange("joined", Number(text))}
+              value={String(queue.unavailable_slots.length)}
               keyboardType="numeric"
-              editable={isEditing}
+              editable={false}
             />
           </View>
 
@@ -652,15 +622,15 @@ const QueueDetailsScreen = () => {
             <Text style={styles.label}>Max People</Text>
             <TextInput
               style={[styles.input, !isEditing && styles.disabledInput]}
-              value={String(queue.max)}
-              onChangeText={(text) => handleChange("max", Number(text))}
+              value={String(queue.no_of_slots)}
+              onChangeText={(text) => handleChange("no_of_slots", Number(text))}
               keyboardType="numeric"
               editable={isEditing}
             />
           </View>
 
           <Text style={styles.statusText}>
-            {queue.joined}/{queue.max} joined
+            {queue.unavailable_slots.length}/{queue.no_of_slots} joined
           </Text>
 
           {/* Buttons */}
@@ -684,17 +654,17 @@ const QueueDetailsScreen = () => {
         {editingStart && (
           <DateTimePicker
             mode={editingStart}
-            value={new Date(queue.startTime)}
+            value={new Date(queue.start_time)}
             display="default"
-            onChange={(e, d) => handleDateChange("startTime", e, d)}
+            onChange={(e, d) => handleDateChange("start_time", e, d)}
           />
         )}
         {editingEnd && (
           <DateTimePicker
             mode={editingEnd}
-            value={new Date(queue.endTime)}
+            value={new Date(queue.end_time)}
             display="default"
-            onChange={(e, d) => handleDateChange("endTime", e, d)}
+            onChange={(e, d) => handleDateChange("end_time", e, d)}
           />
         )}
       </ScrollView>

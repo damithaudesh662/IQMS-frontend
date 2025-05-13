@@ -1,4 +1,6 @@
-import { RouteProp, useNavigation } from "@react-navigation/native";
+import { QueueItem } from "@/interfaces/QueueItem";
+import { useUser } from "@/utils/UserProvider";
+import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
@@ -14,11 +16,12 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons"; // Import icons
 import { supabase } from "../../lib/supabase";
 import * as adminService from "../../services/adminService";
+import * as instituteService from "../../services/instituteService";
 
 type RootStackParamList = {
-  AdminDashboard: { userID: string };
+  AdminDashboard: undefined;
   AdminProfileScreen: undefined;
-  QueueCardsScreen: undefined;
+  QueueCardsScreen: { queues: QueueItem[] };
   AdminCreateQueueScreen: undefined;
   SignIn: undefined;
   CustomizePlatformScreen: undefined;
@@ -29,17 +32,11 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<
   "AdminDashboard"
 >;
 
-type Props = {
-  route: RouteProp<RootStackParamList, "AdminDashboard">;
-};
-
-const AdminDashboard: React.FC<Props> = ({ route }) => {
-  const { userID } = route?.params ?? {};
+const AdminDashboard = () => {
+  const { userID, instituteID, loading } = useUser();
   const [instituteName, setInstituteName] = useState("");
   const [instituteAddress, setInstituteAddress] = useState("");
   const [queueCount, setQueueCount] = useState(0);
-
-  console.log("UserID", userID);
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   useEffect(() => {
@@ -92,6 +89,15 @@ const AdminDashboard: React.FC<Props> = ({ route }) => {
     });
   }, [navigation]);
 
+  const handleQueueScreen = async () => {
+    if (!loading && instituteID) {
+      const queues = await instituteService.getQueuesByInstituteID(
+        Number(instituteID)
+      );
+      navigation.navigate("QueueCardsScreen", { queues: queues });
+    }
+  };
+
   const stats = {
     activeQueues: 5,
     averageWaitTime: "12 min",
@@ -114,7 +120,7 @@ const AdminDashboard: React.FC<Props> = ({ route }) => {
         <View style={styles.statsContainer}>
           <TouchableOpacity
             style={[styles.statCard, styles.clickableCard]}
-            onPress={() => navigation.navigate("QueueCardsScreen")}
+            onPress={handleQueueScreen}
           >
             <View>
               <Text style={[styles.statLabel, styles.clickableCardText]}>

@@ -1,25 +1,40 @@
+import { useUser } from "@/utils/UserProvider";
+import DateTimePicker, {
+  EvtTypes,
+} from "@react-native-community/datetimepicker";
+import { Picker } from "@react-native-picker/picker";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useState } from "react";
 import {
-  View,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  Alert,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
+  View,
 } from "react-native";
-import { Picker } from '@react-native-picker/picker';
-import DateTimePicker, { EvtTypes } from '@react-native-community/datetimepicker';
+import * as adminService from "../../services/adminService";
+
+type RootStackParamList = {
+  AdminDashboard: undefined;
+};
+
+type HomeScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "AdminDashboard"
+>;
 
 const AdminCreateQueueScreen = () => {
+  const { instituteID } = useUser();
+  const navigation = useNavigation<HomeScreenNavigationProp>();
   const [form, setForm] = useState({
     queueName: "",
-    serviceProvider: "",
     startDate: "",
-    endDate: "",
     startTime: "",
     endTime: "",
     timePerSlot: "",
@@ -35,24 +50,53 @@ const AdminCreateQueueScreen = () => {
     endTime: false,
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log("Form submitted:", form);
-    Alert.alert("Success", "Queue created successfully!");
+
+    const queueData = {
+      institute_id: instituteID,
+      queue_name: form.queueName,
+      date: form.startDate,
+      start_time: form.startTime,
+      end_time: form.endTime,
+      queue_type: form.queueType == "one-time" ? "NON-RECURRING" : "RECURRING",
+      is_ongoing: false,
+      no_of_slots: Number(form.maxPeople),
+      unavailable_slots: [],
+      time_per_slot: form.timePerSlot,
+    };
+
+    const { error } = await adminService.createQueue(queueData);
+
+    if (error) {
+      Alert.alert(error.message);
+    } else {
+      Alert.alert("Success", "Queue created successfully!");
+    }
+
+    navigation.navigate("AdminDashboard");
   };
 
-  const formatDate = (date: { toISOString: () => string; }) => {
-    return date.toISOString().split('T')[0];
+  const formatDate = (date: { toISOString: () => string }) => {
+    return date.toISOString().split("T")[0];
   };
 
-  const formatTime = (date: { toTimeString: () => string; }) => {
-    return date.toTimeString().substring(0, 5);
+  const formatTime = (date: { toTimeString: () => string }) => {
+    return date.toTimeString().substring(0, 8);
   };
 
-  const handlePickerChange = (type: string, event: { type: EvtTypes; nativeEvent: { timestamp: number; utcOffset: number; }; }, selectedValue: Date | undefined) => {
+  const handlePickerChange = (
+    type: string,
+    event: {
+      type: EvtTypes;
+      nativeEvent: { timestamp: number; utcOffset: number };
+    },
+    selectedValue: Date | undefined
+  ) => {
     setShowPicker({ ...showPicker, [type]: false });
-    
+
     if (selectedValue) {
-      if (type === 'startDate' || type === 'endDate') {
+      if (type === "startDate" || type === "endDate") {
         setForm({ ...form, [type]: formatDate(selectedValue) });
       } else {
         setForm({ ...form, [type]: formatTime(selectedValue) });
@@ -70,7 +114,7 @@ const AdminCreateQueueScreen = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
         >
@@ -82,17 +126,11 @@ const AdminCreateQueueScreen = () => {
             value={form.queueName}
             onChangeText={(text) => setForm({ ...form, queueName: text })}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Service Provider Name"
-            value={form.serviceProvider}
-            onChangeText={(text) => setForm({ ...form, serviceProvider: text })}
-          />
 
           {/* Start Date Picker */}
-          <TouchableOpacity 
-            style={styles.input} 
-            onPress={() => togglePicker('startDate')}
+          <TouchableOpacity
+            style={styles.input}
+            onPress={() => togglePicker("startDate")}
           >
             <Text>{form.startDate || "Select Start Date"}</Text>
           </TouchableOpacity>
@@ -101,55 +139,53 @@ const AdminCreateQueueScreen = () => {
               value={form.startDate ? new Date(form.startDate) : new Date()}
               mode="date"
               display="default"
-              onChange={(event, date) => handlePickerChange('startDate', event, date)}
-            />
-          )}
-
-          {/* End Date Picker */}
-          <TouchableOpacity 
-            style={styles.input} 
-            onPress={() => togglePicker('endDate')}
-          >
-            <Text>{form.endDate || "Select End Date"}</Text>
-          </TouchableOpacity>
-          {showPicker.endDate && (
-            <DateTimePicker
-              value={form.endDate ? new Date(form.endDate) : new Date()}
-              mode="date"
-              display="default"
-              onChange={(event, date) => handlePickerChange('endDate', event, date)}
+              onChange={(event, date) =>
+                handlePickerChange("startDate", event, date)
+              }
             />
           )}
 
           {/* Start Time Picker */}
-          <TouchableOpacity 
-            style={styles.input} 
-            onPress={() => togglePicker('startTime')}
+          <TouchableOpacity
+            style={styles.input}
+            onPress={() => togglePicker("startTime")}
           >
             <Text>{form.startTime || "Select Start Time"}</Text>
           </TouchableOpacity>
           {showPicker.startTime && (
             <DateTimePicker
-              value={form.startTime ? new Date(`1970-01-01T${form.startTime}`) : new Date()}
+              value={
+                form.startTime
+                  ? new Date(`1970-01-01T${form.startTime}`)
+                  : new Date()
+              }
               mode="time"
               display="default"
-              onChange={(event, time) => handlePickerChange('startTime', event, time)}
+              onChange={(event, time) =>
+                handlePickerChange("startTime", event, time)
+              }
             />
           )}
 
           {/* End Time Picker */}
-          <TouchableOpacity 
-            style={styles.input} 
-            onPress={() => togglePicker('endTime')}
+          <TouchableOpacity
+            style={styles.input}
+            onPress={() => togglePicker("endTime")}
           >
             <Text>{form.endTime || "Select End Time"}</Text>
           </TouchableOpacity>
           {showPicker.endTime && (
             <DateTimePicker
-              value={form.endTime ? new Date(`1970-01-01T${form.endTime}`) : new Date()}
+              value={
+                form.endTime
+                  ? new Date(`1970-01-01T${form.endTime}`)
+                  : new Date()
+              }
               mode="time"
               display="default"
-              onChange={(event, time) => handlePickerChange('endTime', event, time)}
+              onChange={(event, time) =>
+                handlePickerChange("endTime", event, time)
+              }
             />
           )}
 
@@ -223,7 +259,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     padding: 20,
-    paddingBottom: 40, 
+    paddingBottom: 40,
   },
   title: {
     fontSize: 26,
@@ -238,7 +274,7 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 15,
     fontSize: 16,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   dropdownContainer: {
     marginBottom: 15,

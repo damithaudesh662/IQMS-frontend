@@ -1,6 +1,7 @@
+import { CreateQueueItem } from "@/interfaces/QueueItem";
 import { supabase } from "../lib/supabase";
 
-export async function getDetailsForAdminDashboard(userID: string) {
+export async function getDetailsForAdminDashboard(userID: string | null) {
   const { data, error } = await supabase
     .from("institute_admins")
     .select(
@@ -31,4 +32,12 @@ export async function getDetailsForAdminDashboard(userID: string) {
     queueCount,
     error: error,
   };
+}
+
+export async function createQueue(queueData: CreateQueueItem) {
+  const { data, error } = await supabase
+    .from("institute_queues")
+    .insert([queueData]);
+
+  return { error: error };
 }
