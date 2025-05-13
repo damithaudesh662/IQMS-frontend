@@ -1,4 +1,5 @@
-import { useNavigation } from "@react-navigation/native";
+import { QueueItem } from "@/interfaces/QueueItem";
+import { RouteProp, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import moment from "moment";
 import React from "react";
@@ -23,8 +24,8 @@ type Queue = {
 };
 
 type RootStackParamList = {
-  QueueDetailsScreen: { queue: Queue };
-  QueueCardsScreen: undefined;
+  QueueDetailsScreen: { queue: QueueItem };
+  QueueCardsScreen: { queues: QueueItem[] };
 };
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
@@ -32,20 +33,24 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<
   "QueueCardsScreen"
 >;
 
-// Hardcoded queues
-const queues: Queue[] = Array.from({ length: 10 }).map((_, i) => {
-  const startMoment = moment().add(i - 5, "hours");
-  const EndMoment = moment(startMoment).add(2, "hours");
-  return {
-    id: `Q${i + 1}`,
-    name: `Queue ${i + 1}`,
-    institution: `Institution ${i + 1}`,
-    startTime: startMoment.toISOString(),
-    endTime: EndMoment.toISOString(),
-    joined: Math.floor(Math.random() * 50),
-    max: 50,
-  };
-});
+type Props = {
+  route: RouteProp<RootStackParamList, "QueueCardsScreen">;
+};
+
+// // Hardcoded queues
+// const queues: Queue[] = Array.from({ length: 10 }).map((_, i) => {
+//   const startMoment = moment().add(i - 5, "hours");
+//   const EndMoment = moment(startMoment).add(2, "hours");
+//   return {
+//     id: `Q${i + 1}`,
+//     name: `Queue ${i + 1}`,
+//     institution: `Institution ${i + 1}`,
+//     startTime: startMoment.toISOString(),
+//     endTime: EndMoment.toISOString(),
+//     joined: Math.floor(Math.random() * 50),
+//     max: 50,
+//   };
+// });
 
 // Blinking dot component
 const BlinkingDot = ({ active }: { active: boolean }) => {
@@ -56,17 +61,18 @@ const BlinkingDot = ({ active }: { active: boolean }) => {
   );
 };
 
-const QueueCardsScreen = () => {
+const QueueCardsScreen: React.FC<Props> = ({ route }) => {
+  const { queues } = route.params;
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
-  const renderItem = ({ item }: { item: Queue }) => {
+  const renderItem = ({ item }: { item: QueueItem }) => {
     const now = moment();
 
-    const start = moment(item.startTime);
-    const end = moment(item.endTime);
-    const isActive = now.isBetween(start, end);
-    const isUpcoming = now.isBefore(start);
-    if (!isActive && !isUpcoming) return null;
+    // const start = moment(item.start_time, "HH:mm:ss");
+    // const end = moment(item.end_time, "HH:mm:ss");
+    // const isActive = now.isBetween(start, end);
+    // const isUpcoming = now.isBefore(start);
+    // if (!isActive && !isUpcoming) return null;
 
     return (
       <TouchableOpacity
@@ -76,8 +82,8 @@ const QueueCardsScreen = () => {
         }
       >
         <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>{item.name}</Text>
-          <BlinkingCircle style={styles.dot} ongoing={isActive} />
+          <Text style={styles.cardTitle}>{item.queue_name}</Text>
+          <BlinkingCircle style={styles.dot} ongoing={item.is_ongoing} />
         </View>
       </TouchableOpacity>
     );

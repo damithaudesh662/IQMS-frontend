@@ -10,6 +10,11 @@ export type QueueItem = {
   unavailable_slots: number[];
 };
 
+export type CreateQueueItem = Omit<QueueItem, "id"> & {
+  institute_id: string | null;
+  time_per_slot: string;
+};
+
 export type QueueGroups = {
   upcoming: QueueItem[];
   ongoing: QueueItem[];

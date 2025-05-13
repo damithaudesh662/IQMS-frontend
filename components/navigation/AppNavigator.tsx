@@ -2,6 +2,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 
 import { Institute } from "@/interfaces/Institute";
+import { QueueItem } from "@/interfaces/QueueItem";
+import { UserProvider } from "@/utils/UserProvider";
 import AdminCreateQueueScreen from "../screens/AdminCreateQueue";
 import AdminDashboard from "../screens/AdminDashboard"; // Import your AdminDashboard screen
 import AdminProfileScreen from "../screens/AdminProfile"; // Import your AdminProfile screen
@@ -21,10 +23,10 @@ export type RootStackParamList = {
   CreateUserAccount: undefined;
   CreateAdminAccount: undefined;
   UserDashboard: undefined; // Add the UserDashboard screen type
-  AdminDashboard: undefined; // Add the AdminDashboard screen type
+  AdminDashboard: { userID: string }; // Add the AdminDashboard screen type
   AdminProfileScreen: undefined; // Add the AdminProfile screen type
   AdminCreateQueueScreen: undefined;
-  QueueCardsScreen: undefined;
+  QueueCardsScreen: { queues: QueueItem[] };
   QueueDetailsScreen: undefined;
   InstituteMarketPlace: undefined;
   CustomizePlatformScreen: undefined;
@@ -41,35 +43,37 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AppNavigator = ({ session, role }: { session: any; role: any }) => {
   const isSignedIn = !!session;
-  return (
-    <Stack.Navigator
-      initialRouteName={
-        !isSignedIn
-          ? "Home"
-          : role === "admin"
-          ? "AdminDashboard"
-          : "UserDashboard"
-      }
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: "#f7f7f7" },
-      }}
-    >
-      {!isSignedIn ? (
-        <>
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="SignIn" component={SignInScreen} />
-          <Stack.Screen
-            name="CreateUserAccount"
-            component={CreateUserAccount}
-          />
-          <Stack.Screen
-            name="CreateAdminAccount"
-            component={CreateAdminAccount}
-          />
-        </>
-      ) : role === "admin" ? (
-        <>
+
+  if (!isSignedIn) {
+    return (
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: "#f7f7f7" },
+        }}
+      >
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="SignIn" component={SignInScreen} />
+        <Stack.Screen name="CreateUserAccount" component={CreateUserAccount} />
+        <Stack.Screen
+          name="CreateAdminAccount"
+          component={CreateAdminAccount}
+        />
+      </Stack.Navigator>
+    );
+  }
+
+  if (role === "admin") {
+    return (
+      <UserProvider>
+        <Stack.Navigator
+          initialRouteName="AdminDashboard"
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: "#f7f7f7" },
+          }}
+        >
           <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
           <Stack.Screen
             name="AdminProfileScreen"
@@ -79,27 +83,32 @@ const AppNavigator = ({ session, role }: { session: any; role: any }) => {
             name="AdminCreateQueueScreen"
             component={AdminCreateQueueScreen}
           />
-          <Stack.Screen
-            name="CustomizePlatformScreen"
-            component={AdminDashboard}
-          />
+          <Stack.Screen name="CustomizePlatformScreen" component={HomeScreen} />
           <Stack.Screen name="QueueCardsScreen" component={QueueCardsScreen} />
           <Stack.Screen
             name="QueueDetailsScreen"
             component={QueueDetailsScreen}
           />
-        </>
-      ) : (
-        <>
-          <Stack.Screen name="UserDashboard" component={UserDashboard} />
-          <Stack.Screen name="QueueSlotsScreen" component={QueueSlotsScreen} />
-          <Stack.Screen name="InstituteScreen" component={InstituteScreen} />
-          <Stack.Screen
-            name="InstituteMarketPlace"
-            component={InstituteMarketPlace}
-          />
-        </>
-      )}
+        </Stack.Navigator>
+      </UserProvider>
+    );
+  }
+
+  return (
+    <Stack.Navigator
+      initialRouteName="UserDashboard"
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: "#f7f7f7" },
+      }}
+    >
+      <Stack.Screen name="UserDashboard" component={UserDashboard} />
+      <Stack.Screen name="QueueSlotsScreen" component={QueueSlotsScreen} />
+      <Stack.Screen name="InstituteScreen" component={InstituteScreen} />
+      <Stack.Screen
+        name="InstituteMarketPlace"
+        component={InstituteMarketPlace}
+      />
     </Stack.Navigator>
   );
 };
