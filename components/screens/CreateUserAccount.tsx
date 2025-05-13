@@ -1,20 +1,21 @@
+import { supabase } from "@/lib/supabase";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  SafeAreaView,
+  Alert,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
   TouchableWithoutFeedback,
-  Keyboard,
-  Alert,
+  View,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import * as FileSystem from "expo-file-system";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type RootStackParamList = {
   CreateUserAccount: undefined;
@@ -32,34 +33,25 @@ const CreateAccountScreen = () => {
   const [address, setAddress] = useState("");
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
-  const handleCreateAccount = async (isAdmin = false) => {
+  const handleCreateAccount = async () => {
     if (!name || !email || !password || !address) {
       Alert.alert("Error", "Please fill all fields.");
       return;
     }
 
-    const userInfo = {
-      name,
-      email,
-      password,
-      address,
-      role: isAdmin ? "admin" : "user",
-    };
+    const { error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          role: "user",
+          display_name: name,
+          address: address,
+        },
+      },
+    });
 
-    const fileUri = FileSystem.documentDirectory + "config.json";
-
-    try {
-      await FileSystem.writeAsStringAsync(
-        fileUri,
-        JSON.stringify(userInfo, null, 2)
-      );
-      Alert.alert("Success", `${isAdmin ? "Admin" : "User"} account created!`);
-    } catch (error) {
-      console.error("File write error:", error);
-      Alert.alert("Error", "Failed to save user info.");
-    }
-    console.log("Saved to:", fileUri);
-    console.log("User Info:", userInfo);
+    if (error) Alert.alert(error.message);
   };
 
   const handleCreateAdminAccount = async () => {
@@ -70,83 +62,90 @@ const CreateAccountScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
         style={styles.container}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.inner}>
-            <View style={styles.header}>
-              <Text style={styles.title}>Create Account</Text>
-              <Text style={styles.subtitle}>
-                Fill the details below to register
-              </Text>
-            </View>
-
-            <View style={styles.formContainer}>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Name</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your name"
-                  value={name}
-                  onChangeText={setName}
-                />
+          <ScrollView
+            contentContainerStyle={styles.inner}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.inner}>
+              <View style={styles.header}>
+                <Text style={styles.title}>Create Account</Text>
+                <Text style={styles.subtitle}>
+                  Fill the details below to register
+                </Text>
               </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Email</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your email"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              </View>
+              <View style={styles.formContainer}>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Name</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your name"
+                    value={name}
+                    onChangeText={setName}
+                  />
+                </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Password</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                />
-              </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Email</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your email"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
+                </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Address</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your address"
-                  value={address}
-                  onChangeText={setAddress}
-                />
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Password</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Address</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your address"
+                    value={address}
+                    onChangeText={setAddress}
+                  />
+                </View>
+
+                <TouchableOpacity
+                  style={styles.createButton}
+                  onPress={() => handleCreateAccount()}
+                >
+                  <Text style={styles.buttonText}>Create Account</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.adminButton}
+                  onPress={() => handleCreateAdminAccount()}
+                >
+                  <Text style={styles.buttonText}>Create Admin Account</Text>
+                </TouchableOpacity>
               </View>
 
               <TouchableOpacity
-                style={styles.createButton}
-                onPress={() => handleCreateAccount(false)}
+                style={styles.backButton}
+                onPress={() => navigation.goBack()}
               >
-                <Text style={styles.buttonText}>Create Account</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.adminButton}
-                onPress={() => handleCreateAdminAccount()}
-              >
-                <Text style={styles.buttonText}>Create Admin Account</Text>
+                <Text style={styles.backButtonText}>Back to Home</Text>
               </TouchableOpacity>
             </View>
-
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => navigation.goBack()}
-            >
-              <Text style={styles.backButtonText}>Back to Home</Text>
-            </TouchableOpacity>
-          </View>
+          </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -162,7 +161,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   inner: {
-    flex: 1,
+    flexGrow: 1,
     padding: 20,
     justifyContent: "space-between",
   },

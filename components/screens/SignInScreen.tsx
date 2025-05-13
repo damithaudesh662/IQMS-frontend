@@ -20,7 +20,7 @@ import { supabase } from "../../lib/supabase";
 type RootStackParamList = {
   SignInScreen: undefined;
   UserDashboard: undefined; // Add the CreateUserAccount screen type
-  AdminDashboard: undefined; // Add the CreateUserAccount screen type
+  AdminDashboard: { userID: string }; // Add the CreateUserAccount screen type
   Home: undefined;
 };
 
@@ -54,7 +54,7 @@ const SignInScreen = () => {
           if (role === "user") {
             navigation.replace("UserDashboard");
           } else if (role === "admin") {
-            navigation.replace("AdminDashboard");
+            navigation.replace("AdminDashboard", { userID: data.user.id });
           } else {
             Alert.alert("No authorization. Please contact an admin");
           }
