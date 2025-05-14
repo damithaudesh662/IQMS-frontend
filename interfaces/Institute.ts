@@ -23,3 +23,12 @@ export type InstituteData = {
     count: number;
   };
 };
+
+export type tempAdminInfo = {
+  id: string;
+  email: string;
+  password: string;
+  displayName: string;
+  address: string;
+  contactNumber: string;
+};

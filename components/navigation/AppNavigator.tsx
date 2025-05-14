@@ -17,6 +17,7 @@ import QueueDetailsScreen from "../screens/QueueDetailsScreen";
 import QueueSlotsScreen from "../screens/QueueSlotsScreen";
 import SignInScreen from "../screens/SignInScreen";
 import UserDashboard from "../screens/UserDashboard"; // Import your UserDashboard screen
+import CreateAdminScreen from "../screens/CreateAdmin";
 export type RootStackParamList = {
   Home: undefined;
   SignIn: undefined;
@@ -36,6 +37,7 @@ export type RootStackParamList = {
     totalSlots: number;
     unavailableSlots: number[];
   };
+  CreateAdminScreen: undefined;
   // Add other screens here as needed
 };
 
@@ -88,6 +90,10 @@ const AppNavigator = ({ session, role }: { session: any; role: any }) => {
           <Stack.Screen
             name="QueueDetailsScreen"
             component={QueueDetailsScreen}
+          />
+          <Stack.Screen 
+            name="CreateAdminScreen"
+            component={CreateAdminScreen}
           />
         </Stack.Navigator>
       </UserProvider>
