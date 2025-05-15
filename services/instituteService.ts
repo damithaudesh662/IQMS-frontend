@@ -1,4 +1,4 @@
-import { adminInfo } from "@/interfaces/Institute";
+import { adminInfo, tempAdminInfo } from "@/interfaces/Institute";
 import { supabase } from "../lib/supabase";
 
 export async function getAllInstitutes() {
@@ -95,5 +95,61 @@ export async function createInstituteAndAdmin(adminInfo: adminInfo) {
 
       return { error: error };
     }
+  }
+}
+
+export async function createAdmin(tempAdminInfo: tempAdminInfo) {
+  try {
+    const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
+
+    if (!currentUser?.id || userError) {
+      return { error: new Error("Authentication required") };
+    }
+
+    // Get institute_id using single() to enforce unique match
+    const { data: adminData, error: adminError } = await supabase
+      .from("institute_admins")
+      .select("institute_id")
+      .eq("user_id", currentUser.id)
+
+    if (adminError || !adminData) {
+      return { error: adminError || new Error("Admin institute not found") };
+    }
+
+    if (adminData.length > 1) {
+      console.warn("Multiple institute associations found, using first entry");
+    }
+
+    const instituteId = adminData[0].institute_id;
+
+    // Create new admin account
+    const { data: signUpData, error: authError } = await supabase.auth.signUp({
+      email: tempAdminInfo.email,
+      password: tempAdminInfo.password,
+      options: {
+        data: {
+          role: "admin",
+          display_name: tempAdminInfo.displayName,
+          address: tempAdminInfo.address,
+        },
+      },
+    });
+
+    if (authError) return { error: authError };
+    if (!signUpData.user?.id) return { error: new Error("User creation failed") };
+
+    // Link to institute
+    const { error: insertError } = await supabase
+      .from("institute_admins")
+      .insert([{ 
+        institute_id: instituteId, 
+        user_id: signUpData.user.id 
+      }]);
+
+    return { error: insertError || null };
+
+  } catch (error) {
+    console.error("Error in createAdmin:", error);
+    return { error: error instanceof Error ? error : new Error("Unknown error") };
   }
 }

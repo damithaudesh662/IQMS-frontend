@@ -24,6 +24,7 @@ type RootStackParamList = {
   AdminCreateQueueScreen: undefined;
   SignIn: undefined;
   CustomizePlatformScreen: undefined;
+  CreateAdminScreen: undefined;
 };
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
@@ -161,6 +162,14 @@ const AdminDashboard = () => {
           <TouchableOpacity style={styles.iconButton} onPress={() => {}}>
             <Icon name="bar-chart" size={24} color="#fff" />
             <Text style={styles.iconButtonText}>Reports</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.iconButton} 
+            onPress={() => navigation.navigate("CreateAdminScreen")}
+          >
+            <Icon name="people" size={24} color="#fff" />
+            <Text style={styles.iconButtonText}>Create Admin</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.signOutContainer}>
