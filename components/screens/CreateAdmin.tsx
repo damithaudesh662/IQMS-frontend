@@ -343,7 +343,6 @@ const CreateAdminScreen = () => {
                   />
                 </View>
               ))}
-
               <TouchableOpacity
                 style={styles.createButton}
                 onPress={handleCreateAdmin}
@@ -355,7 +354,7 @@ const CreateAdminScreen = () => {
                 style={styles.backButton}
                 onPress={() => navigation.goBack()}
               >
-                <Text style={styles.backButtonText}>Back to Login</Text>
+                <Text style={styles.backButtonText}>Back to Home</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>

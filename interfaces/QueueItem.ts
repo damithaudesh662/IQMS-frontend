@@ -19,3 +19,28 @@ export type QueueGroups = {
   upcoming: QueueItem[];
   ongoing: QueueItem[];
 };
+
+export type JoinedQueue = {
+  id: string;
+  institute_queues: {
+    queue_name: string;
+    date: string;
+    start_time: string;
+    end_time: string;
+    is_ongoing: boolean;
+    institutes: {
+      institute_name: string;
+    };
+  };
+  slot: string;
+};
+
+export type UserQueueViewScreenProps = {
+  id: string;
+  slot: string;
+  institute_name: string;
+  queue_name: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+};
