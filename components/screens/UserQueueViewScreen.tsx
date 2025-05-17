@@ -1,6 +1,8 @@
+import useCurrentSlotSubscription from "@/hooks/useCurrentSlotSubscription";
+import * as userService from "@/services/userService";
 import { RouteProp } from "@react-navigation/native";
-import React from "react";
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Alert, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { RootStackParamList } from "../navigation/AppNavigator";
 
 type Props = {
@@ -8,14 +10,49 @@ type Props = {
 };
 
 const UserQueueViewScreen: React.FC<Props> = ({ route }) => {
-  const { slot, institute_name, queue_name, date, start_time, end_time } =
-    route.params;
+  const {
+    id: joinedQueueID,
+    slot,
+    institute_name,
+    queue_name,
+    date,
+    start_time,
+    end_time,
+  } = route.params;
+  const [currentSlot, setCurrentSlot] = useState(1);
+  const [queueID, setQueueID] = useState("");
 
-  // Mock data, you should replace with actual logic or props
-  const currentOngoingSlot = "3"; // example current ongoing slot
+  useEffect(() => {
+    const fetchQueueID = async () => {
+      const { queueID, error } = await userService.getQueueID(joinedQueueID);
+      if (error) {
+        Alert.alert(error.message);
+      } else {
+        setQueueID(queueID);
+        fetchCurrentSlot(queueID);
+      }
+    };
+
+    const fetchCurrentSlot = async (queueID: string) => {
+      const { currentSlot, error } = await userService.getCurrentSlot(queueID);
+      if (error) {
+        Alert.alert(error.message);
+      } else {
+        setCurrentSlot(currentSlot);
+      }
+    };
+
+    fetchQueueID();
+  }, [joinedQueueID]);
+
+  useCurrentSlotSubscription(queueID, (newSlot) => {
+    console.log("Hook Triggered");
+    setCurrentSlot(newSlot);
+  });
+
   const estimatedWaitTime = calculateEstimatedWaitTime(
     slot,
-    currentOngoingSlot
+    currentSlot.toString()
   );
 
   function calculateEstimatedWaitTime(userSlot: string, ongoingSlot: string) {
@@ -50,7 +87,7 @@ const UserQueueViewScreen: React.FC<Props> = ({ route }) => {
 
         <View style={styles.row}>
           <Text style={styles.label}>Current Slot:</Text>
-          <Text style={styles.value}>{currentOngoingSlot}</Text>
+          <Text style={styles.value}>{currentSlot}</Text>
         </View>
 
         <View style={styles.waitTimeBox}>

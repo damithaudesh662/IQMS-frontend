@@ -115,3 +115,32 @@ export async function updateUserProfile(
 
   return { data };
 }
+
+export async function getCurrentSlot(queueID: string) {
+  const { data, error } = await supabase
+    .from("institute_queues")
+    .select("current_slot")
+    .eq("id", queueID)
+    .single();
+
+  if (error) {
+    return { currentSlot: 1, error: error };
+  }
+
+  return { currentSlot: data.current_slot, error: null };
+}
+
+export async function getQueueID(joinedQueueID: string) {
+  const { data, error } = await supabase
+    .from("user_joined_queues")
+    .select("queue_id")
+    .eq("id", joinedQueueID)
+    .single();
+
+  if (error) {
+    console.log(error);
+    return { queueID: 1, error: error };
+  }
+
+  return { queueID: data.queue_id, error: null };
+}

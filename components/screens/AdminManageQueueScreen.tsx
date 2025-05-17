@@ -14,7 +14,8 @@ const AdminManageQueueScreen: React.FC<Props> = ({ route }) => {
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [currentOngoingSlot, setCurrentOngoingSlot] = useState("1");
+  const [currentOngoingSlot, setCurrentOngoingSlot] = useState("");
+  const [totalSlots, setTotalSlots] = useState(0);
 
   useEffect(() => {
     const fetchQueueDetails = async () => {
@@ -28,17 +29,38 @@ const AdminManageQueueScreen: React.FC<Props> = ({ route }) => {
         setStartTime(queue.start_time);
         setEndTime(queue.end_time);
         setCurrentOngoingSlot(queue.current_slot);
+        setTotalSlots(queue.no_of_slots);
       }
     };
 
     fetchQueueDetails();
-  });
+  }, []);
+
+  const changeSlot = async (delta: number) => {
+    if (Number(currentOngoingSlot) + delta <= totalSlots) {
+      const newSlot = Math.max(1, Number(currentOngoingSlot) + delta);
+      const error = await adminService.updateCurrentSlot(
+        id,
+        newSlot.toString()
+      );
+      if (error) {
+        Alert.alert(error.message);
+      } else {
+        setCurrentOngoingSlot(newSlot.toString());
+      }
+    } else {
+      Alert.alert(`Total number of slots: ${totalSlots} `);
+    }
+  };
 
   // Mock data, you should replace with actual logic or props
-  const estimatedWaitTime = calculateEstimatedWaitTime("1", currentOngoingSlot);
+  const estimatedWaitTime = calculateEstimatedWaitTime(
+    Number(currentOngoingSlot) + 1,
+    Number(currentOngoingSlot)
+  );
 
-  function calculateEstimatedWaitTime(userSlot: string, ongoingSlot: string) {
-    const waitSlots = Number(userSlot) - Number(ongoingSlot);
+  function calculateEstimatedWaitTime(userSlot: number, ongoingSlot: number) {
+    const waitSlots = Math.abs(userSlot - ongoingSlot);
     const minutesPerSlot = 15; // for example, each slot is 15 mins
     if (waitSlots <= 0) return "Your turn now!";
     return `${waitSlots * minutesPerSlot} mins`;
@@ -69,6 +91,18 @@ const AdminManageQueueScreen: React.FC<Props> = ({ route }) => {
         <View style={styles.waitTimeBox}>
           <Text style={styles.waitTimeLabel}>Estimated Wait Time</Text>
           <Text style={styles.waitTime}>{estimatedWaitTime}</Text>
+        </View>
+      </View>
+
+      <View style={styles.buttonRow}>
+        <Text style={styles.label}>Change Slot: </Text>
+        <View style={styles.controls}>
+          <Text style={styles.controlButton} onPress={() => changeSlot(-1)}>
+            -
+          </Text>
+          <Text style={styles.controlButton} onPress={() => changeSlot(1)}>
+            +
+          </Text>
         </View>
       </View>
     </SafeAreaView>
@@ -134,6 +168,26 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     color: "#004d40",
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  controls: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  controlButton: {
+    fontSize: 40,
+    fontWeight: "bold",
+    paddingHorizontal: 30,
+    paddingVertical: 6,
+    backgroundColor: "#00796b",
+    color: "#fff",
+    borderRadius: 10,
+    overflow: "hidden",
   },
 });
 

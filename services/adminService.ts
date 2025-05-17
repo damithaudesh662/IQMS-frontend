@@ -55,3 +55,12 @@ export async function getQueueDetailsForManage(id: string) {
 
   return { queue: data, error: null };
 }
+
+export async function updateCurrentSlot(queueID: string, currentSlot: string) {
+  const { data, error } = await supabase
+    .from("institute_queues")
+    .update({ current_slot: currentSlot })
+    .eq("id", queueID);
+
+  return error;
+}
