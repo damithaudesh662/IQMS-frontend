@@ -22,6 +22,7 @@ import SignInScreen from "../screens/SignInScreen";
 import UserDashboard from "../screens/UserDashboard"; // Import your UserDashboard screen
 import UserProfile from "../screens/UserProfile";
 import UserQueueViewScreen from "../screens/UserQueueViewScreen";
+import CustomizePlatformScreen from "../screens/CustomizePlatformScreen";
 export type RootStackParamList = {
   Home: undefined;
   SignIn: undefined;
@@ -133,6 +134,7 @@ const AppNavigator = ({ session, role }: { session: any; role: any }) => {
         component={InstituteMarketPlace}
       />
       <Stack.Screen name="UserProfile" component={UserProfile} />
+      <Stack.Screen name="CustomizePlatformScreen" component={CustomizePlatformScreen} />
     </Stack.Navigator>
   );
 };
