@@ -20,7 +20,7 @@ import * as instituteService from "../../services/instituteService";
 type RootStackParamList = {
   AdminDashboard: undefined;
   AdminProfileScreen: undefined;
-  QueueCardsScreen: { queues: QueueItem[] };
+  QueueCardsScreen: { queues: QueueItem[]; isManage: boolean };
   AdminCreateQueueScreen: undefined;
   SignIn: undefined;
   CustomizePlatformScreen: undefined;
@@ -70,7 +70,22 @@ const AdminDashboard = () => {
       const queues = await instituteService.getQueuesByInstituteID(
         Number(instituteID)
       );
-      navigation.navigate("QueueCardsScreen", { queues: queues });
+      navigation.navigate("QueueCardsScreen", {
+        queues: queues,
+        isManage: false,
+      });
+    }
+  };
+
+  const handleQueueScreenForManage = async () => {
+    if (!loading && instituteID) {
+      const queues = await instituteService.getQueuesByInstituteID(
+        Number(instituteID)
+      );
+      navigation.navigate("QueueCardsScreen", {
+        queues: queues,
+        isManage: true,
+      });
     }
   };
 
@@ -170,6 +185,14 @@ const AdminDashboard = () => {
           >
             <Icon name="people" size={24} color="#fff" />
             <Text style={styles.iconButtonText}>Create Admin</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={handleQueueScreenForManage}
+          >
+            <Icon name="add-task" size={24} color="#fff" />
+            <Text style={styles.iconButtonText}>Manage Queues</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.signOutContainer}>

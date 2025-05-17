@@ -44,3 +44,7 @@ export type UserQueueViewScreenProps = {
   start_time: string;
   end_time: string;
 };
+
+export type AdminManageQueueScreenProps = {
+  id: string;
+};
