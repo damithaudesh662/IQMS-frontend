@@ -41,3 +41,17 @@ export async function createQueue(queueData: CreateQueueItem) {
 
   return { error: error };
 }
+
+export async function getQueueDetailsForManage(id: string) {
+  const { data, error } = await supabase
+    .from("institute_queues")
+    .select()
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    return { queue: {}, error: error };
+  }
+
+  return { queue: data, error: null };
+}

@@ -25,7 +25,8 @@ type Queue = {
 
 type RootStackParamList = {
   QueueDetailsScreen: { queue: QueueItem };
-  QueueCardsScreen: { queues: QueueItem[] };
+  QueueCardsScreen: { queues: QueueItem[]; isManage: boolean };
+  AdminManageQueueScreen: { id: string };
 };
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
@@ -62,7 +63,7 @@ const BlinkingDot = ({ active }: { active: boolean }) => {
 };
 
 const QueueCardsScreen: React.FC<Props> = ({ route }) => {
-  const { queues } = route.params;
+  const { queues, isManage } = route.params;
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const renderItem = ({ item }: { item: QueueItem }) => {
@@ -78,7 +79,9 @@ const QueueCardsScreen: React.FC<Props> = ({ route }) => {
       <TouchableOpacity
         style={styles.card}
         onPress={() =>
-          navigation.navigate("QueueDetailsScreen", { queue: item })
+          isManage
+            ? navigation.navigate("AdminManageQueueScreen", { id: item.id })
+            : navigation.navigate("QueueDetailsScreen", { queue: item })
         }
       >
         <View style={styles.cardHeader}>

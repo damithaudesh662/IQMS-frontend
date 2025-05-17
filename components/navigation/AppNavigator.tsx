@@ -6,6 +6,7 @@ import { QueueItem, UserQueueViewScreenProps } from "@/interfaces/QueueItem";
 import { UserProvider } from "@/utils/UserProvider";
 import AdminCreateQueueScreen from "../screens/AdminCreateQueue";
 import AdminDashboard from "../screens/AdminDashboard"; // Import your AdminDashboard screen
+import AdminManageQueueScreen from "../screens/AdminManageQueueScreen";
 import AdminProfileScreen from "../screens/AdminProfile"; // Import your AdminProfile screen
 import CreateAdminScreen from "../screens/CreateAdmin";
 import CreateAdminAccount from "../screens/CreateAdminAccount"; // Import your CreateAdminAccount screen
@@ -30,7 +31,8 @@ export type RootStackParamList = {
   AdminDashboard: { userID: string }; // Add the AdminDashboard screen type
   AdminProfileScreen: undefined; // Add the AdminProfile screen type
   AdminCreateQueueScreen: undefined;
-  QueueCardsScreen: { queues: QueueItem[] };
+  AdminManageQueueScreen: { id: string };
+  QueueCardsScreen: { queues: QueueItem[]; isManage: boolean };
   QueueDetailsScreen: undefined;
   InstituteMarketPlace: undefined;
   CustomizePlatformScreen: undefined;
@@ -90,6 +92,10 @@ const AppNavigator = ({ session, role }: { session: any; role: any }) => {
           <Stack.Screen
             name="AdminCreateQueueScreen"
             component={AdminCreateQueueScreen}
+          />
+          <Stack.Screen
+            name="AdminManageQueueScreen"
+            component={AdminManageQueueScreen}
           />
           <Stack.Screen name="CustomizePlatformScreen" component={HomeScreen} />
           <Stack.Screen name="QueueCardsScreen" component={QueueCardsScreen} />

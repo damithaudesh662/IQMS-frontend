@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect } from "react";
 import {
   Alert,
   SafeAreaView,
@@ -10,8 +10,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { supabase } from "../../lib/supabase";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { supabase } from "../../lib/supabase";
 
 type RootStackParamList = {
   UserDashboard: undefined;
@@ -76,7 +76,7 @@ const UserDashboard = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.iconButton}
-            // onPress={() => navigation.navigate("AdminCreateQueueScreen")}
+            onPress={() => navigation.navigate("JoinedQueuesScreen")}
           >
             <Icon name="queue" size={24} color="#fff" />
             <Text style={styles.iconButtonText}>Joined Queues</Text>
