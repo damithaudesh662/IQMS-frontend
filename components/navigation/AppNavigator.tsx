@@ -19,9 +19,8 @@ import QueueDetailsScreen from "../screens/QueueDetailsScreen";
 import QueueSlotsScreen from "../screens/QueueSlotsScreen";
 import SignInScreen from "../screens/SignInScreen";
 import UserDashboard from "../screens/UserDashboard"; // Import your UserDashboard screen
-import UserQueueViewScreen from "../screens/UserQueueViewScreen";
 import UserProfile from "../screens/UserProfile";
-import CreateAdminScreen from "../screens/CreateAdmin";
+import UserQueueViewScreen from "../screens/UserQueueViewScreen";
 export type RootStackParamList = {
   Home: undefined;
   SignIn: undefined;

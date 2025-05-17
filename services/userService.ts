@@ -62,7 +62,8 @@ export async function getQueuesByUserID() {
   }
 
   return { queues: queues, error: null };
-  
+}
+
 export async function getDetailsForUserProfile(userID: string | null) {
   if (!userID) {
     return { error: "No user ID provided", data: null };
