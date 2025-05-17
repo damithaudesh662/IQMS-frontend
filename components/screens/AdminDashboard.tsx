@@ -153,7 +153,7 @@ const AdminDashboard = () => {
 
           <TouchableOpacity
             style={styles.iconButton}
-            onPress={() => navigation.navigate("CustomizePlatformScreen")}
+            // onPress={() => navigation.navigate("CustomizePlatformScreen")}
           >
             <Icon name="settings" size={24} color="#fff" />
             <Text style={styles.iconButtonText}>Customize</Text>
@@ -164,8 +164,8 @@ const AdminDashboard = () => {
             <Text style={styles.iconButtonText}>Reports</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.iconButton} 
+          <TouchableOpacity
+            style={styles.iconButton}
             onPress={() => navigation.navigate("CreateAdminScreen")}
           >
             <Icon name="people" size={24} color="#fff" />
