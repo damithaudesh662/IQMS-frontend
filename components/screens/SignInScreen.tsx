@@ -1,3 +1,5 @@
+
+
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useState } from "react";
@@ -19,8 +21,8 @@ import { supabase } from "../../lib/supabase";
 
 type RootStackParamList = {
   SignInScreen: undefined;
-  UserDashboard: undefined; // Add the CreateUserAccount screen type
-  AdminDashboard: undefined; // Add the CreateUserAccount screen type
+  UserDashboard: undefined;
+  AdminDashboard: undefined;
   Home: undefined;
 };
 
@@ -28,6 +30,7 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   "SignInScreen"
 >;
+
 const SignInScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,8 +38,8 @@ const SignInScreen = () => {
 
   const handleSignIn = async () => {
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
+      email,
+      password,
     });
 
     if (error) {
@@ -66,31 +69,32 @@ const SignInScreen = () => {
   };
 
   const handleForgotPassword = () => {
-    // Navigate to forgot password screen
     console.log("Forgot password");
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
-        style={styles.container}
-      >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <ScrollView
-            contentContainerStyle={styles.inner}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={styles.inner}>
-              <View style={styles.header}>
-                <Text style={styles.title}>Sign In</Text>
-                <Text style={styles.subtitle}>
-                  Welcome back! Please sign in to continue
-                </Text>
-              </View>
+      <View style={styles.container}>
+        {/* Fixed header */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Sign In</Text>
+          <Text style={styles.subtitle}>
+            Welcome back! Please sign in to continue
+          </Text>
+        </View>
 
+        {/* Keyboard Avoiding Section */}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.flexOne}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <ScrollView
+              contentContainerStyle={styles.scrollContent}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
               <View style={styles.formContainer}>
                 <View style={styles.inputContainer}>
                   <Text style={styles.label}>Email</Text>
@@ -139,10 +143,10 @@ const SignInScreen = () => {
               >
                 <Text style={styles.backButtonText}>Back to Home</Text>
               </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+            </ScrollView>
+          </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 };
@@ -154,27 +158,32 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    paddingHorizontal: 20,
   },
-  inner: {
+  flexOne: {
+    flex: 1,
+  },
+  scrollContent: {
     flexGrow: 1,
-    padding: 20,
-    justifyContent: "space-between",
+    justifyContent: "center",
+    paddingBottom: 40,
   },
   header: {
     alignItems: "center",
-    marginTop: 40,
+    marginTop: 50,
     marginBottom: 30,
   },
   title: {
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: "bold",
     color: "#333",
-    marginBottom: 8,
+    marginBottom: 6,
   },
   subtitle: {
     fontSize: 16,
     color: "#666",
     textAlign: "center",
+    paddingHorizontal: 20,
   },
   formContainer: {
     flex: 1,
@@ -204,6 +213,7 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     color: "#4A90E2",
     fontSize: 14,
+    fontWeight: "500",
   },
   signInButton: {
     backgroundColor: "#4A90E2",
@@ -211,6 +221,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
   },
   signInButtonText: {
     color: "white",
@@ -220,7 +235,7 @@ const styles = StyleSheet.create({
   backButton: {
     alignItems: "center",
     padding: 16,
-    marginBottom: 20,
+    marginTop: 10,
   },
   backButtonText: {
     color: "#666",

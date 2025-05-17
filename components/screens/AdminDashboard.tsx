@@ -5,7 +5,6 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   Alert,
-  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -62,31 +61,7 @@ const AdminDashboard = () => {
     navigation.setOptions({
       headerShown: true,
       title: "",
-      headerRight: () => (
-        <View
-          style={{
-            marginTop: Platform.OS === "android" ? 8 : 0,
-            marginRight: 8,
-          }}
-        >
-          <TouchableOpacity
-            className="bg-blue-500 px-4 py-2 rounded-lg mr-4"
-            activeOpacity={0.8}
-            onPress={async () => {
-              const { error } = await supabase.auth.signOut();
-              if (error) {
-                Alert.alert("Error", error.message);
-              } else {
-                navigation.replace("SignIn");
-              }
-            }}
-          >
-            <Text className="text-white font-bold text-base text-center">
-              Sign Out
-            </Text>
-          </TouchableOpacity>
-        </View>
-      ),
+      headerRight: undefined,
     });
   }, [navigation]);
 
@@ -104,6 +79,15 @@ const AdminDashboard = () => {
     averageWaitTime: "12 min",
     activeUsers: 134,
     appointmentsToday: 48,
+  };
+
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      Alert.alert("Error", error.message);
+    } else {
+      navigation.replace("SignIn");
+    }
   };
 
   return (
@@ -186,6 +170,14 @@ const AdminDashboard = () => {
           >
             <Icon name="people" size={24} color="#fff" />
             <Text style={styles.iconButtonText}>Create Admin</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.signOutContainer}>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: "#e74c3c" }]}
+            onPress={handleSignOut}
+          >
+            <Text style={styles.buttonText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -294,6 +286,10 @@ const styles = StyleSheet.create({
     color: "#666",
     marginTop: 4,
     textAlign: "center",
+  },
+  signOutContainer: {
+    marginTop: 20,
+    alignItems: "center",
   },
 });
 

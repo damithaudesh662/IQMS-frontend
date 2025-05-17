@@ -18,8 +18,7 @@ import {
 } from "react-native";
 
 type RootStackParamList = {
-  CreateUserAccount: undefined;
-  CreateAdminAccount: undefined; // Add the CreateUserAccount screen type
+  CreateUserAccount: undefined; // Add the CreateUserAccount screen type
 };
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
@@ -54,9 +53,7 @@ const CreateAccountScreen = () => {
     if (error) Alert.alert(error.message);
   };
 
-  const handleCreateAdminAccount = async () => {
-    navigation.navigate("CreateAdminAccount"); // go back to login page
-  };
+  
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -130,12 +127,7 @@ const CreateAccountScreen = () => {
                   <Text style={styles.buttonText}>Create Account</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.adminButton}
-                  onPress={() => handleCreateAdminAccount()}
-                >
-                  <Text style={styles.buttonText}>Create Admin Account</Text>
-                </TouchableOpacity>
+              
               </View>
 
               <TouchableOpacity

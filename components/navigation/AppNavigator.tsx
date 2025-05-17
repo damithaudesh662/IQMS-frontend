@@ -20,6 +20,8 @@ import QueueSlotsScreen from "../screens/QueueSlotsScreen";
 import SignInScreen from "../screens/SignInScreen";
 import UserDashboard from "../screens/UserDashboard"; // Import your UserDashboard screen
 import UserQueueViewScreen from "../screens/UserQueueViewScreen";
+import UserProfile from "../screens/UserProfile";
+import CreateAdminScreen from "../screens/CreateAdmin";
 export type RootStackParamList = {
   Home: undefined;
   SignIn: undefined;
@@ -41,6 +43,7 @@ export type RootStackParamList = {
     totalSlots: number;
     unavailableSlots: number[];
   };
+  UserProfile: undefined;
   CreateAdminScreen: undefined;
   // Add other screens here as needed
 };
@@ -124,6 +127,7 @@ const AppNavigator = ({ session, role }: { session: any; role: any }) => {
         name="InstituteMarketPlace"
         component={InstituteMarketPlace}
       />
+      <Stack.Screen name="UserProfile" component={UserProfile} />
     </Stack.Navigator>
   );
 };
