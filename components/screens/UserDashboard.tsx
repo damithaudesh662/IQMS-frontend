@@ -16,6 +16,7 @@ type RootStackParamList = {
   UserDashboard: undefined;
   InstituteMarketPlace: undefined;
   SignIn: undefined;
+  JoinedQueuesScreen: undefined;
 };
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
@@ -82,7 +83,7 @@ const UserDashboard = () => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
-        // onPress={() => navigation.navigate("AdminCreateQueueScreen")}
+        onPress={() => navigation.navigate("JoinedQueuesScreen")}
       >
         <Text style={styles.buttonText}>Joined Queues</Text>
       </TouchableOpacity>

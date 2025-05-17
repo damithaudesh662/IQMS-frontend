@@ -2,22 +2,24 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 
 import { Institute } from "@/interfaces/Institute";
-import { QueueItem } from "@/interfaces/QueueItem";
+import { QueueItem, UserQueueViewScreenProps } from "@/interfaces/QueueItem";
 import { UserProvider } from "@/utils/UserProvider";
 import AdminCreateQueueScreen from "../screens/AdminCreateQueue";
 import AdminDashboard from "../screens/AdminDashboard"; // Import your AdminDashboard screen
 import AdminProfileScreen from "../screens/AdminProfile"; // Import your AdminProfile screen
+import CreateAdminScreen from "../screens/CreateAdmin";
 import CreateAdminAccount from "../screens/CreateAdminAccount"; // Import your CreateAdminAccount screen
 import CreateUserAccount from "../screens/CreateUserAccount"; // Import your CreateUserAccount screen
 import HomeScreen from "../screens/HomeScreen";
 import InstituteMarketPlace from "../screens/InstituteMarketPlace";
 import InstituteScreen from "../screens/InstituteScreen";
+import JoinedQueuesScreen from "../screens/JoinedQueuesScreen";
 import QueueCardsScreen from "../screens/QueueCardsScreen";
 import QueueDetailsScreen from "../screens/QueueDetailsScreen";
 import QueueSlotsScreen from "../screens/QueueSlotsScreen";
 import SignInScreen from "../screens/SignInScreen";
 import UserDashboard from "../screens/UserDashboard"; // Import your UserDashboard screen
-import CreateAdminScreen from "../screens/CreateAdmin";
+import UserQueueViewScreen from "../screens/UserQueueViewScreen";
 export type RootStackParamList = {
   Home: undefined;
   SignIn: undefined;
@@ -32,6 +34,8 @@ export type RootStackParamList = {
   InstituteMarketPlace: undefined;
   CustomizePlatformScreen: undefined;
   InstituteScreen: { institute: Institute };
+  JoinedQueuesScreen: { queues: QueueItem[] };
+  UserQueueViewScreen: UserQueueViewScreenProps;
   QueueSlotsScreen: {
     id: string;
     totalSlots: number;
@@ -91,7 +95,7 @@ const AppNavigator = ({ session, role }: { session: any; role: any }) => {
             name="QueueDetailsScreen"
             component={QueueDetailsScreen}
           />
-          <Stack.Screen 
+          <Stack.Screen
             name="CreateAdminScreen"
             component={CreateAdminScreen}
           />
@@ -110,6 +114,11 @@ const AppNavigator = ({ session, role }: { session: any; role: any }) => {
     >
       <Stack.Screen name="UserDashboard" component={UserDashboard} />
       <Stack.Screen name="QueueSlotsScreen" component={QueueSlotsScreen} />
+      <Stack.Screen name="JoinedQueuesScreen" component={JoinedQueuesScreen} />
+      <Stack.Screen
+        name="UserQueueViewScreen"
+        component={UserQueueViewScreen}
+      />
       <Stack.Screen name="InstituteScreen" component={InstituteScreen} />
       <Stack.Screen
         name="InstituteMarketPlace"

@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import * as instituteService from "../../services/instituteService";
+import * as userService from "../../services/userService";
 import { RootStackParamList } from "../navigation/AppNavigator";
 
 interface QueueSlotsScreenProps {
@@ -26,16 +27,21 @@ const QueueSlotsScreen: React.FC<Props> = ({ route }) => {
   const [unavailable_slots, set_unavailable_slots] = useState(unavailableSlots);
 
   const handleSelectSlot = async (item: number) => {
-    let updatedUnavailableSlots = [...unavailable_slots, item];
-    const success = await instituteService.updateUnavailableSlotsForQueue(
-      id,
-      updatedUnavailableSlots
-    );
-    if (success) {
-      set_unavailable_slots(updatedUnavailableSlots);
-      Alert.alert("Slot booked successfully!");
+    const { error } = await userService.joinQueue(id, item.toString());
+    if (error) {
+      Alert.alert(error);
     } else {
-      Alert.alert("Unable to book the slot at the moment");
+      let updatedUnavailableSlots = [...unavailable_slots, item];
+      const success = await instituteService.updateUnavailableSlotsForQueue(
+        id,
+        updatedUnavailableSlots
+      );
+      if (success) {
+        set_unavailable_slots(updatedUnavailableSlots);
+        Alert.alert("Slot booked successfully!");
+      } else {
+        Alert.alert("Unable to book the slot at the moment");
+      }
     }
   };
 
