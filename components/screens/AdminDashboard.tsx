@@ -168,7 +168,7 @@ const AdminDashboard = () => {
 
           <TouchableOpacity
             style={styles.iconButton}
-            // onPress={() => navigation.navigate("CustomizePlatformScreen")}
+            onPress={() => navigation.navigate("CustomizePlatformScreen")}
           >
             <Icon name="settings" size={24} color="#fff" />
             <Text style={styles.iconButtonText}>Customize</Text>
