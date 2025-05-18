@@ -98,7 +98,7 @@ const AppNavigator = ({ session, role }: { session: any; role: any }) => {
             name="AdminManageQueueScreen"
             component={AdminManageQueueScreen}
           />
-          <Stack.Screen name="CustomizePlatformScreen" component={HomeScreen} />
+          <Stack.Screen name="CustomizePlatformScreen" component={CustomizePlatformScreen} />
           <Stack.Screen name="QueueCardsScreen" component={QueueCardsScreen} />
           <Stack.Screen
             name="QueueDetailsScreen"
